@@ -1,0 +1,265 @@
+/* Estilos organizados para a Loja de Brinquedos */
+body { padding-top: 0; margin: 0; font-family: Inter, system-ui, Arial, sans-serif; background: linear-gradient(180deg, #e3f2fd 0%, #f7fbff 100%); background-color: #e3f2fd; min-height: 100vh; }
+.hero { background: transparent; padding: 48px 0; }
+
+/* Fazer o header colar no topo e preencher a largura, sem lacunas */
+header { position: sticky; top: 0; z-index: 1030; width: 100%; padding: 8px 0; margin-top: 0; }
+
+/* Remover cantos arredondados visuais e garantir que a navbar ocupe todo o espaço superior */
+.navbar { border-radius: 0; padding: 0.5rem 1rem; }
+.navbar .container { padding-left: 1rem; padding-right: 1rem; }
+.card-img-top { height: 180px; object-fit: cover; }
+.brand { font-weight: 700; color: #a3180b; }
+.lead-muted { color: #6c757d; }
+
+/* Logo no navbar */
+.header-height { --header-h: 64px; }
+
+/* Header controlado: define o espaço disponível para logo + texto */
+.navbar {
+  min-height: var(--header-h);
+  padding-top: .15rem; /* reduzir padding vertical para header mais compacto */
+  padding-bottom: .15rem;
+}
+
+/* Paleta viva para o header: azul -> vermelho -> amarelo */
+.navbar {
+  background: linear-gradient(90deg, #0d6efd 0%, #e31c23 60%, #ffc107 100%);
+  color: #ffffff;
+}
+
+/* Força contraste para links e botões dentro do header */
+.navbar .nav-link,
+.navbar .navbar-brand,
+.navbar .btn,
+.navbar .navbar-toggler-icon {
+  color: #fff !important;
+}
+
+/* Botões outline ficam com borda branca translúcida no header */
+.navbar .btn-outline-primary {
+  color: #fff;
+  border-color: rgba(255,255,255,0.65);
+  background: transparent;
+}
+.navbar .btn-outline-primary:hover {
+  background: rgba(255,255,255,0.08);
+}
+
+/* Botão ativo (filled) no header: preenchimento branco com texto azul para contraste */
+.navbar .btn-primary {
+  background-color: #ffffff !important;
+  color: #0d6efd !important;
+  border-color: transparent !important;
+}
+
+/* Navbar toggler (mobile) — deixar ícone visível em branco */
+.navbar-toggler { border-color: transparent; background: transparent; }
+.navbar-toggler-icon { filter: none; }
+
+.navbar .container {
+  display: flex;
+  align-items: center;
+}
+
+/* ==========================
+   Header compacto (regras principais)
+   - padding vertical reduzido (= ~8px)
+   - alinhar verticalmente com flexbox
+   - impedir que imagens da logo encolham (flex: 0 0 auto)
+   - aplicar height fixa e object-fit: contain para consistência visual
+   ========================== */
+.navbar { padding-top: .5rem; padding-bottom: .5rem; }
+.navbar, header { margin-top: 0; }
+
+/* Garante que o brand não encolha e fique sempre na mesma linha do menu */
+.navbar .navbar-brand { display: flex; align-items: center; gap: .5rem; flex: 0 0 auto; }
+
+/* Forçar as imagens da marca a não sofrerem shrink pelo flex container
+   - assumo height fixo de 120px para apresentação consistente
+   - use object-fit: contain para preservar proporção
+   Se preferir outro valor, diga (ex: 100px ou 140px). */
+.navbar .navbar-brand img.brand-icon,
+.navbar .navbar-brand img.brand-text {
+  flex: 0 0 auto; /* não encolher */
+  height: auto;   /* usar altura natural do conteúdo */
+  max-height: 160px; /* limite para evitar imagens gigantes */
+  width: auto;    /* preserva proporção */
+  object-fit: contain;
+  display: block;
+}
+
+/* Mantém suporte a responsividade sem forçar redução automática da imagem
+   apenas reduz a altura do header em telas menores (sem encolher logos) */
+@media (max-width: 768px) {
+  .navbar { padding-top: .35rem; padding-bottom: .35rem; }
+  .navbar .navbar-brand img.brand-icon,
+  .navbar .navbar-brand img.brand-text { height: 96px; }
+}
+
+@media (max-width: 576px) {
+  .navbar { padding-top: .25rem; padding-bottom: .25rem; }
+  .navbar .navbar-brand img.brand-icon { height: 64px; }
+  .navbar .navbar-brand img.brand-text { display: none; }
+}
+
+/* Reduce gap between brand icon and text */
+.navbar .navbar-brand { display: flex; align-items: center; gap: .4rem; }
+
+/* Imagens escalam para caber dentro do header e ficam lado a lado */
+.navbar .navbar-brand img.brand-icon { height: auto; max-height: 160px; width: auto; }
+.navbar .navbar-brand img.brand-text { height: auto; max-height: 160px; width: auto; }
+
+/* Classe alternativa .logo para uso futuro; fixa a altura sem redimensionar pela flexbox */
+.logo img { height: auto; max-height: 120px; width: auto; object-fit: contain; display: block; }
+
+/* Garantir que as imagens da marca não encolham no flex container */
+.navbar .navbar-brand img { flex: 0 0 auto; }
+
+/* Limitar logo em um máximo confortável para desktop (manter dimensões da imagem) */
+.brand-icon { max-width: 160px; }
+.brand-text { max-width: 420px; }
+
+/* Ajustes responsivos: reduz o header em telas menores e mantém imagens proporcionais */
+@media (max-width: 1200px) {
+  :root { --header-h: 64px; }
+}
+
+@media (max-width: 768px) {
+  :root { --header-h: 56px; }
+}
+
+@media (max-width: 576px) {
+  :root { --header-h: 48px; }
+  .brand-text { display: none; }
+}
+
+/* Footer fixo no final do conteúdo */
+footer { margin-top: 40px; }
+body > footer { position: relative; }
+
+/* Destaque do link ativo no navbar */
+.nav-link.active { font-weight: 600; color: #0d6efd !important; }
+
+/* Estilo dos botões no navbar */
+.navbar .btn {
+  margin-left: .35rem;
+  padding-left: 0.9rem;
+  padding-right: 0.9rem;
+}
+
+/* Aproxima primeiro botão do brand removendo margem esquerda */
+.navbar .btn-group a:first-child,
+.navbar .btn-group .btn:first-child { margin-left: 0 !important; }
+
+/* Botões com visual infantilizado e alegre */
+.btn-playful {
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  background: linear-gradient(90deg,#ffd54f 0%, #ff6b6b 60%);
+  color: #fff;
+  border: none;
+  border-radius: 999px;
+  padding: .45rem .95rem;
+  font-weight: 600;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+  transition: transform .18s cubic-bezier(.2,.9,.2,1), box-shadow .18s ease, filter .12s ease, background .18s ease;
+}
+.btn-playful:hover {
+  transform: translateY(-3px) scale(1.01);
+  filter: brightness(1.02);
+  box-shadow: 0 10px 24px rgba(0,0,0,0.14);
+}
+.btn-playful:active { transform: translateY(-1px); }
+
+/* Variante outline mas com estilo infantil */
+.btn-playful-outline {
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+  /* Fundo branco por padrão dentro do header */
+  background: #ffffff;
+  color: #0d6efd;
+  border: 0;
+  border-radius: 999px;
+  padding: .4rem .9rem;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  transition: background .18s ease, transform .12s ease, box-shadow .12s ease;
+}
+.btn-playful-outline:hover {
+  transform: translateY(-2px);
+  background: rgba(255,255,255,0.95);
+  box-shadow: 0 8px 18px rgba(0,0,0,0.10);
+}
+
+/* Ajustes para tamanhos pequenos */
+.btn-playful.btn-sm, .btn-playful-outline.btn-sm { padding: .25rem .6rem; font-size: .9rem; }
+.btn-playful.btn-lg { padding: .7rem 1.3rem; font-size: 1.05rem; }
+
+.navbar .btn:hover {
+  box-shadow: 0 2px 6px rgba(13,110,253,0.12);
+}
+
+@media (min-width: 992px) {
+  /* Em telas grandes, empurra os botões ainda mais para a direita */
+  .navbar .container { display: flex; gap: 1rem; }
+  .navbar .collapse.navbar-collapse { justify-content: flex-end; }
+}
+
+/* Ajustes responsivos */
+@media (max-width: 576px) {
+  .card-img-top { height: 160px; }
+}
+
+/* =========================
+   Estilos para seção DESTAQUES
+   - Box centralizado com max-width
+   - Scroll horizontal somente dentro do box
+   - Cards fixos lado a lado
+   ========================= */
+.destaques-box {
+  max-width: 1100px;
+  border: 1px solid rgba(0,0,0,0.06);
+  padding: 16px;
+  border-radius: 10px;
+  background: #fff;
+}
+
+.destaques-box { display:flex; justify-content:center; }
+
+.destaques-scroll {
+  display: flex;
+  gap: 20px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-bottom: 8px;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+.destaques-scroll::-webkit-scrollbar { height: 10px; }
+.destaques-scroll::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.12); border-radius: 10px; }
+
+.card-produto { flex: 0 0 auto; width: 300px; }
+
+/* Ajuste da imagem dentro do card-produto para melhor preenchimento */
+.card-produto .card-img-top { height: 200px; object-fit: cover; }
+
+@media (max-width: 1024px) {
+  .destaques-box { padding: 12px; }
+  .card-produto { width: 260px; }
+  .card-produto .card-img-top { height: 180px; }
+}
+
+@media (max-width: 768px) {
+  .destaques-box { padding: 10px; }
+  .card-produto { width: 220px; }
+  .card-produto .card-img-top { height: 150px; }
+}
+
+@media (max-width: 480px) {
+  .card-produto { width: 180px; }
+  .card-produto .card-img-top { height: 120px; }
+}

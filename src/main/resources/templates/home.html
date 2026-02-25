@@ -1,0 +1,114 @@
+<!doctype html>
+
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>TOYBOX — Home</title>
+
+    <!-- Bootstrap 5 CSS (CDN) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-PLACEHOLDER" crossorigin="anonymous">
+    <link th:href="@{/css/style.css}" rel="stylesheet" />
+</head>
+<body class="bg-white">
+
+<!-- ==========================
+     HEADER (compacto)
+     - Header compacto, logo maior e menu na mesma linha
+     - Usa container para centralizar o conteúdo
+=========================== -->
+<header>
+    <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom py-2">
+        <div class="container align-items-center">
+            <a class="navbar-brand d-flex align-items-center" th:href="@{/}">
+                <!-- Ícone da marca -->
+                <img th:src="@{/images/Logo.png}" src="/images/Logo.png" alt="TOYBOX" class="brand-icon me-2"/>
+                <!-- Imagem com o texto da marca (opcional em telas pequenas) -->
+                <img th:src="@{/images/TextoLogo.png}" src="/images/TextoLogo.png" alt="TOYBOX" class="brand-text d-none d-md-inline-block"/>
+            </a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar" aria-controls="mainNavbar" aria-expanded="false" aria-label="Abrir menu">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse justify-content-end" id="mainNavbar">
+                <div class="d-flex align-items-center">
+                    <div class="btn-group" role="group" aria-label="Menu principal">
+                        <a th:href="@{/}" th:class="${pagina=='home'} ? 'btn-playful btn-sm' : 'btn-playful-outline btn-sm'">Home</a>
+                        <a th:href="@{/catalogo}" th:class="${pagina=='catalogo'} ? 'btn-playful btn-sm' : 'btn-playful-outline btn-sm'">Catálogo</a>
+                        <a th:href="@{/categorias}" th:class="${pagina=='categorias'} ? 'btn-playful btn-sm' : 'btn-playful-outline btn-sm'">Categorias</a>
+                        <a th:href="@{/sobre}" th:class="${pagina=='sobre'} ? 'btn-playful btn-sm' : 'btn-playful-outline btn-sm'">Sobre</a>
+                        <a th:href="@{/admin}" th:class="${pagina=='admin'} ? 'btn-playful btn-sm' : 'btn-playful-outline btn-sm'">Admin</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+</header>
+
+
+<!-- ==========================
+     HERO / BANNER PRINCIPAL
+     - Duas colunas: texto (esquerda) + imagem (direita)
+     - CTA para o catálogo
+=========================== -->
+<section class="hero py-4">
+    <div class="container">
+        <div class="row">
+            <div class="col-12 col-lg-8 mx-auto text-center">
+                <h1 class="display-5 fw-bold">Brinquedos que inspiram</h1>
+                <p class="lead text-muted">Seleção de brinquedos educativos e seguros para todas as idades. Qualidade, diversão e aprendizado em um só lugar.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- ==========================
+     DESTAQUES
+     - Grid responsivo de produtos (3-4 colunas dependendo do tamanho)
+     - Usa Thymeleaf para iterar sobre ${produtos}
+=========================== -->
+<main class="py-4">
+    <div class="container">
+        <div class="d-flex align-items-center mb-4">
+            <h2 class="h4 mb-0">Destaques</h2>
+        </div>
+
+        <!-- NOVA SEÇÃO: destaque horizontal com scroll interno -->
+        <div class="destaques-box mx-auto my-3">
+            <div class="destaques-scroll" role="list">
+                <div class="card-produto" th:each="produto : ${produtos}" role="listitem">
+                    <div class="card shadow-sm h-100" style="width:250px;">
+                        <img th:src="@{${produto.imagemUrl}}" src="/images/placeholder-product.png" class="card-img-top" alt="" />
+                        <div class="card-body d-flex flex-column">
+                            <h6 class="card-title mb-1" th:text="${produto.nome}">Nome</h6>
+                            <p class="card-text text-muted small mb-2" th:text="${produto.descricao}">Descrição</p>
+                            <div class="mt-auto d-flex justify-content-between align-items-center">
+                                <strong class="text-primary" th:text="'R$ ' + ${#numbers.formatDecimal(produto.preco,2,2)}">R$ 0,00</strong>
+                                <a th:href="@{/catalogo}" class="btn-playful-outline btn-sm">Comprar</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+
+<!-- ==========================
+     FOOTER
+     - Simples e discreto
+=========================== -->
+<footer class="bg-light py-3 border-top mt-4">
+    <div class="container d-flex justify-content-between small">
+        <div>© <span th:text="${#dates.format(#dates.createNow(), 'yyyy')}">2026</span> TOYBOX</div>
+        <div class="text-muted">contato@toybox.com • (11) 99999-9999</div>
+    </div>
+</footer>
+
+<!-- Bootstrap 5 JS (Popper + JS) via CDN -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-PLACEHOLDER" crossorigin="anonymous"></script>
+</body>
+</html>
