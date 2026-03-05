@@ -77,4 +77,26 @@ public class BrinquedoService {
         // 4. Devolvemos a lista pronta para o Controller
         return listaDTOs;
     }
+	
+	public void excluirBrinquedo(Long id) {
+	    repository.deleteById(id);
+	}
+	
+	public BrinquedoRequestDTO buscarPorId(Long id) {
+	    // Buscamos a entidade no banco
+	    Brinquedo entidade = repository.findById(id)
+	            .orElseThrow(() -> new RuntimeException("Brinquedo não encontrado"));
+
+	    // Convertemos a Entidade para RequestDTO para o formulário conseguir ler
+	    BrinquedoRequestDTO dto = new BrinquedoRequestDTO();
+	    // Se o seu RequestDTO ainda não tem ID, você vai precisar adicionar o campo 'id' nele!
+	    dto.setNome(entidade.getNome());
+	    dto.setPreco(entidade.getPreco());
+	    dto.setCategoria(entidade.getCategoria());
+	    dto.setCaminhoImagem(entidade.getCaminhoImagem());
+	    dto.setDesconto(entidade.getDesconto());
+
+	    return dto;
+	}
+	
 }
