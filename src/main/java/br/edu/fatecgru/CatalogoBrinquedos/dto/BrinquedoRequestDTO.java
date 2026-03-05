@@ -55,11 +55,11 @@ public class BrinquedoRequestDTO {
 		this.caminhoImagem = caminhoImagem;
 	}
 
-	public double getDesconto() {
+	public Double getDesconto() {
 		return desconto;
 	}
 
-	public void setDesconto(double desconto) {
+	public void setDesconto(Double desconto) {
 		this.desconto = desconto;
 	}
     

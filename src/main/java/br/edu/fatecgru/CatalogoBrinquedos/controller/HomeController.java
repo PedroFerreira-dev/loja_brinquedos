@@ -51,18 +51,23 @@ public class HomeController {
         //perceber que o brinquedo foi excluído.
     }
     
+ // 1. Rota para abrir a página de edição
+ // Rota para abrir a página exclusiva de edição
     @GetMapping("/editar/{id}")
-    public String prepararEdicao(@PathVariable Long id, Model model) {
-        // 1. Busca os dados do brinquedo
-        BrinquedoRequestDTO brinquedoParaEditar = service.buscarPorId(id);
+    public String abrirPaginaEdicao(@PathVariable Long id, Model model) {
+        // 1. Busca os dados atuais do brinquedo no banco/service
+        BrinquedoRequestDTO brinquedo = service.buscarPorId(id);
         
-        // 2. Coloca os dados no formulário (substituindo o DTO vazio)
-        model.addAttribute("novoBrinquedo", brinquedoParaEditar);
+        // 2. Coloca no model para o formulário de edição
+        model.addAttribute("brinquedoParaEditar", brinquedo);
         
-        // 3. Recarrega a lista para a tabela não sumir
-        model.addAttribute("brinquedos", service.listarTodos());
-        
-        return "index";
+        return "editar"; // Vai procurar o arquivo editar.html
     }
-    
+
+    // Rota para processar o salvamento vindo da página de edição
+    @PostMapping("/atualizar")
+    public String atualizarBrinquedo(@ModelAttribute("brinquedoParaEditar") BrinquedoRequestDTO request) {
+        service.salvarBrinquedo(request);
+        return "redirect:/"; // Volta para a home após o sucesso
+    }
 }

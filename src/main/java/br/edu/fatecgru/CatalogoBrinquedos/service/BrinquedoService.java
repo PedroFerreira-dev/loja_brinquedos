@@ -20,37 +20,41 @@ public class BrinquedoService {
 
 	// Método para Salvar um Brinquedo
 	public BrinquedoResponseDTO salvarBrinquedo(BrinquedoRequestDTO request) {
+	    Brinquedo entidade;
 
-		// Padrões de segurança. Nunca devemos mandar o DTO diretamente para o banco,
-		// nem o entity direto para tela
+	    // 1. LÓGICA DE DECISÃO: O JPA precisa saber se é um novo ou um existente
+	    if (request.getId() != null) {
+	        // Se tem ID, buscamos o que já existe no Docker para atualizar
+	        entidade = repository.findById(request.getId())
+	                .orElseThrow(() -> new RuntimeException("Brinquedo não encontrado"));
+	    } else {
+	        // Se não tem ID, aí sim criamos um 'new' para o banco fazer o INSERT
+	        entidade = new Brinquedo();
+	    }
 
-		// 1. CONVERSÃO DE ENTRADA: Pega o DTO (agora com 5 itens) e transforma na Entidade
-		Brinquedo entidade = new Brinquedo();
-		entidade.setNome(request.getNome());
-		entidade.setPreco(request.getPreco());
-		entidade.setCategoria(request.getCategoria());
-		entidade.setCaminhoImagem(request.getCaminhoImagem());
-		entidade.setDesconto(request.getDesconto());
+	    // 2. CONVERSÃO DE ENTRADA: Atualizamos os campos (com Double para o desconto!)
+	    entidade.setNome(request.getNome());
+	    entidade.setPreco(request.getPreco());
+	    entidade.setCategoria(request.getCategoria());
+	    entidade.setCaminhoImagem(request.getCaminhoImagem());
+	    entidade.setDesconto(request.getDesconto());
 
-		// 2. AÇÃO NO BANCO: Manda o Repository salvar no Docker.
-		// Aqui o banco gera o ID sozinho e devolve a entidade completa salva.
-		Brinquedo entidadeSalva = repository.save(entidade);
+	    // 3. AÇÃO NO BANCO: O .save() decide entre INSERT ou UPDATE baseado no ID
+	    Brinquedo entidadeSalva = repository.save(entidade);
 
-		// 3. CONVERSÃO DE SAÍDA: Pega a Entidade salva (agora com ID) e transforma no
-		// Response DTO passando as 6 informações no construtor!
-		BrinquedoResponseDTO response = new BrinquedoResponseDTO(
-				entidadeSalva.getId(), 
-				entidadeSalva.getNome(),
-				entidadeSalva.getPreco(),
-				entidadeSalva.getCategoria(),
-				entidadeSalva.getCaminhoImagem(),
-				entidadeSalva.getDesconto()
-		);
-
-		// Devolve a caixa de saída já pronta
-		return response;
+	    // 4. CONVERSÃO DE SAÍDA: Devolvemos o DTO completo para a tela
+	    //Foi feita uma mudança aqui. Ao invés de instanciar o BrinquedoResponseDTO e depois
+	    //retornar ele, agora já instanciamos e retornamos na mesma linha. O resultado é o mesmo, 
+	    //mas ficou mais enxuto.
+	    return new BrinquedoResponseDTO(
+	            entidadeSalva.getId(), 
+	            entidadeSalva.getNome(),
+	            entidadeSalva.getPreco(),
+	            entidadeSalva.getCategoria(),
+	            entidadeSalva.getCaminhoImagem(),
+	            entidadeSalva.getDesconto()
+	    );
 	}
-
 	// Método para Listar todos os Brinquedos
 	public List<BrinquedoResponseDTO> listarTodos() {
         // 1. O Repository faz o "SELECT * FROM" automático e traz as Entidades
@@ -89,6 +93,7 @@ public class BrinquedoService {
 
 	    // Convertemos a Entidade para RequestDTO para o formulário conseguir ler
 	    BrinquedoRequestDTO dto = new BrinquedoRequestDTO();
+	    dto.setId(entidade.getId());
 	    // Se o seu RequestDTO ainda não tem ID, você vai precisar adicionar o campo 'id' nele!
 	    dto.setNome(entidade.getNome());
 	    dto.setPreco(entidade.getPreco());
