@@ -80,7 +80,7 @@ public class BrinquedoApiController {
         return ResponseEntity.ok(service.listarNovidades());
     }
     
- // GET /api/brinquedos/destaques
+    // GET /api/brinquedos/destaques
     @GetMapping("/destaques")
     public ResponseEntity<List<BrinquedoResponseDTO>> listarDestaques() {
         return ResponseEntity.ok(service.listarDestaques());

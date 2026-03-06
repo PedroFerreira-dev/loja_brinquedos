@@ -80,7 +80,23 @@ public class BrinquedoService {
     }
     
     //método auxiliar para mapear os dados do DTO para a entidade
+ // No seu BrinquedoService.java, atualize o mapeamento:
+
     private void mapearDtoParaEntidade(BrinquedoRequestDTO request, Brinquedo entidade) {
+        // VALIDAÇÕES DE SEGURANÇA
+        if (request.getNome() == null || request.getNome().isBlank()) {
+            throw new RuntimeException("O nome do brinquedo é obrigatório.");
+        }
+        
+        if (request.getPreco() == null || request.getPreco() <= 0) {
+            throw new RuntimeException("O preço deve ser maior que zero.");
+        }
+        
+        if (request.getQuantidade() != null && request.getQuantidade() < 0) {
+            throw new RuntimeException("A quantidade em estoque não pode ser negativa.");
+        }
+
+        // Se passar pelas validações, ele segue o fluxo normal
         entidade.setNome(request.getNome());
         entidade.setPreco(request.getPreco());
         entidade.setCategoria(request.getCategoria());
@@ -154,6 +170,5 @@ public class BrinquedoService {
         return repository.findTop3ByOrderByVendasDesc()
                 .stream().map(this::converterParaResponse).toList();
     }
-    
-    
+        
 }
