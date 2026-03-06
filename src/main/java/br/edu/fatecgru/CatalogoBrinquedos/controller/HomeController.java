@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import br.edu.fatecgru.CatalogoBrinquedos.dto.BrinquedoRequestDTO;
 import br.edu.fatecgru.CatalogoBrinquedos.service.BrinquedoService;
@@ -70,4 +71,19 @@ public class HomeController {
         service.salvarBrinquedo(request);
         return "redirect:/"; // Volta para a home após o sucesso
     }
+    @GetMapping("/buscar")
+    public String buscarBrinquedoPorNome(@RequestParam("termo") String termo, Model model) { //O @RequestParam captura o valor do 
+    	//campo de busca na tela, e o Model é usado para enviar os resultados de volta para a tela.
+        
+        // 1. Envia o DTO vazio para o formulário de cadastro não quebrar
+        model.addAttribute("novoBrinquedo", new BrinquedoRequestDTO());
+        
+        // 2. Em vez de listarTodos(), usamos o novo método de busca do Service
+        model.addAttribute("brinquedos", service.buscarPorNome(termo));
+        
+        // 3. Devolve a mesma tela, mas agora a tabela só terá os resultados da busca
+        return "index"; 
+    }
+   
+    
 }

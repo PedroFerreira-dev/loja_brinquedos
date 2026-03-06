@@ -1,15 +1,28 @@
 package br.edu.fatecgru.CatalogoBrinquedos.repository;
 
+import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
-
+import org.springframework.data.jpa.repository.Query;
 import br.edu.fatecgru.CatalogoBrinquedos.model.entity.Brinquedo;
 
-@Repository // Avisa o Spring que essa interface cuida do banco de dados
 public interface BrinquedoRepository extends JpaRepository<Brinquedo, Long> {
-    /*JpaRepository é uma classe existente criada pelos desenvolvedores do java spring
-	Nela já há todos os métodos de comandos SQL criados, então nós apenas herdamos
-	os métodos dela na interface (interface somente herda métodos)*/
-	
-    // Vazio mesmo pq o JpaRepository já tem o save(), findById(), delete()...
+
+    // Busca por parte do nome
+    List<Brinquedo> findByNomeContainingIgnoreCase(String nome);
+
+    // Busca por categoria exata
+    List<Brinquedo> findByCategoria(String categoria);
+
+    // Lista as categorias únicas para o filtro do front
+    @Query("SELECT DISTINCT b.categoria FROM Brinquedo b")
+    List<String> buscarCategoriasUnicas();
+
+    // Ordenações por preço
+    List<Brinquedo> findAllByOrderByPrecoAsc();
+    List<Brinquedo> findAllByOrderByPrecoDesc();
+
+    // Pega os 3 últimos (Novidades)
+    List<Brinquedo> findTop3ByOrderByIdDesc();
+    
+    List<Brinquedo> findTop3ByOrderByVendasDesc();
 }

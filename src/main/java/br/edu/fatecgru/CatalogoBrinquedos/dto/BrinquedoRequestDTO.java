@@ -8,6 +8,8 @@ public class BrinquedoRequestDTO {
     private String categoria;
     private String caminhoImagem;
     private double desconto;
+    private Integer quantidade;
+    private String descricao;
     
     
     public BrinquedoRequestDTO() {
@@ -62,5 +64,20 @@ public class BrinquedoRequestDTO {
 	public void setDesconto(Double desconto) {
 		this.desconto = desconto;
 	}
+	
+	public Integer getQuantidade() {
+		return quantidade;
+	}
+	
+	public void setQuantidade(Integer quantidade) {
+		this.quantidade = quantidade;
+	}
     
+	public String getDescricao() {
+		return descricao;
+	}
+	
+	public void setDescricao(String descricao) {
+		this.descricao = descricao;
+	}
 }
