@@ -60,3 +60,16 @@ replay_pid*
 # Segurança e Segredos (ESSENCIAL)
 .env
 application-dev.properties
+
+# Sistema Operacional (Evita lixo do Windows/Mac)
+Thumbs.db
+.DS_Store
+
+# Docker (Evita subir dados locais do banco)
+**/data/
+**/mysql/
+docker-compose.override.yml
+
+# Temporários
+*.tmp
+temp/
