@@ -17,7 +17,7 @@ public class BrinquedoApiController {
     @Autowired
     private BrinquedoService service;
 
-    // 1. LISTAGEM GERAL
+    // 1. LISTAGEM GERAL 
     @GetMapping
     public ResponseEntity<List<BrinquedoResponseDTO>> listar() {
         return ResponseEntity.ok(service.listarTodos());
@@ -80,18 +80,21 @@ public class BrinquedoApiController {
         return ResponseEntity.ok(service.listarNovidades());
     }
     
+    // 11. DESTAQUES (Os 3 mais comprados)
     // GET /api/brinquedos/destaques
     @GetMapping("/destaques")
     public ResponseEntity<List<BrinquedoResponseDTO>> listarDestaques() {
         return ResponseEntity.ok(service.listarDestaques());
     }
-
+    
+    // 12. ENCOMENDAR (Diminuir estoque e aumentar contador de vendas)
     // POST /api/brinquedos/encomendar/5
     @PostMapping("/encomendar/{id}")
     public ResponseEntity<BrinquedoResponseDTO> encomendar(@PathVariable Long id) {
         return ResponseEntity.ok(service.encomendarBrinquedo(id));
     }
 
+    // 13. REPOR ESTOQUE (Aumentar estoque)
     // PATCH /api/brinquedos/repor/5?quantidade=10
     @PatchMapping("/repor/{id}")
     public ResponseEntity<BrinquedoResponseDTO> reporEstoque(

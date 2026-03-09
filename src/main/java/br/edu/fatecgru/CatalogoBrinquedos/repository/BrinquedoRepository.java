@@ -24,5 +24,6 @@ public interface BrinquedoRepository extends JpaRepository<Brinquedo, Long> {
     // Pega os 3 últimos (Novidades)
     List<Brinquedo> findTop3ByOrderByIdDesc();
     
+    // Pega os 3 mais vendidos (Mais Vendidos)
     List<Brinquedo> findTop3ByOrderByVendasDesc();
 }

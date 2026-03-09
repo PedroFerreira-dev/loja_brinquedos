@@ -165,7 +165,9 @@ public class BrinquedoService {
         return converterParaResponse(repository.save(brinquedo));
     }
 
-    // Busca de Destaques
+	
+	 /* Busca de Destaques (Os 3 mais vendidos) o método está na classe BrinquedoRepository,
+	 * mas aqui no Service a gente chama o método existente do jpa e converte para DTO de resposta*/
     public List<BrinquedoResponseDTO> listarDestaques() {
         return repository.findTop3ByOrderByVendasDesc()
                 .stream().map(this::converterParaResponse).toList();
