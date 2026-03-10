@@ -39,7 +39,7 @@ public class BrinquedoApiController {
 
     // 4. ATUALIZAR EXISTENTE (PUT)
     @PutMapping("/{id}")
-    public ResponseEntity<BrinquedoResponseDTO> atualizar(@PathVariable Long id, @RequestBody BrinquedoRequestDTO request) {
+    public ResponseEntity<BrinquedoResponseDTO> atualizar(@PathVariable Long id, @ Valid @RequestBody BrinquedoRequestDTO request) {
         BrinquedoResponseDTO response = service.atualizarBrinquedo(id, request);
         return ResponseEntity.ok(response);
     }
@@ -51,7 +51,7 @@ public class BrinquedoApiController {
         return ResponseEntity.noContent().build();
     }
 
-    // 6. FILTRO POR NOME
+    // 6. FILTRO POR NOME. para testar no postman, use: GET http://localhost:8080/api/brinquedos/buscar?termo=<nome do brinquedo>
     @GetMapping("/buscar")
     public ResponseEntity<List<BrinquedoResponseDTO>> buscarPorNome(@RequestParam("termo") String termo) {
         return ResponseEntity.ok(service.buscarPorNome(termo));

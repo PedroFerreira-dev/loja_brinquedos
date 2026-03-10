@@ -7,6 +7,7 @@ import jakarta.persistence.Id;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 
 @Entity // Avisa o banco que isso vai virar uma tabela
 public class Brinquedo {
@@ -26,9 +27,9 @@ public class Brinquedo {
     private String caminhoImagem; // Campo para armazenar o caminho da imagem do brinquedo (pode ser uma URL ou um caminho local)
     private Double desconto; // Campo para controlar o desconto aplicado ao brinquedo (em porcentagem, ex: 10.0 para 10% de desconto)
     @NotNull(message = "A quantidade em estoque é obrigatória")
-    @Positive(message = "O estoque não pode ser negativo")
+    @PositiveOrZero(message = "O estoque não pode ser negativo")
     private Integer quantidade; // Campo para controlar a quantidade disponível do brinquedo
-    private Integer vendas; // Campo para controlar o número de vendas do brinquedo
+    private Integer vendas = 0; // Campo para controlar o número de vendas do brinquedo
     @NotBlank(message = "A descrição não pode estar vazia")
     private String descricao; // Campo para armazenar uma descrição detalhada do brinquedo (opcional)
    

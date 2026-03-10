@@ -117,7 +117,8 @@ public class BrinquedoService {
                 entidade.getCaminhoImagem(),
                 entidade.getDesconto(), 
                 entidade.getQuantidade(),
-                entidade.getDescricao()
+                entidade.getDescricao(),
+                entidade.getVendas()
         );
     }
 

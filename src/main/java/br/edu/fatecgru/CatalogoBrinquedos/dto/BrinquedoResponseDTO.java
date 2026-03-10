@@ -10,13 +10,14 @@ public class BrinquedoResponseDTO {
     private Double desconto;
     private Integer quantidade;
     private String descricao;
+    private Integer vendas;
 
     public BrinquedoResponseDTO() {
     }
 
     // Criando um construtor inteligente que já converte a entidade para DTO
     public BrinquedoResponseDTO(Long id, String nome, Double preco, String categoria, String caminhoImagem,
-			Double desconto, Integer quantidade, String descricao) {
+			Double desconto, Integer quantidade, String descricao, Integer vendas) {
 		this.id = id;
 		this.nome = nome;
 		this.preco = preco;
@@ -25,11 +26,13 @@ public class BrinquedoResponseDTO {
 		this.desconto = desconto;
 		this.quantidade = quantidade;
 		this.descricao = descricao;
+		this.vendas = vendas;
 	}
 
     public Long getId() {
         return id;
     }
+
 
 	public void setId(Long id) {
         this.id = id;
@@ -89,6 +92,14 @@ public class BrinquedoResponseDTO {
 	
 	public void setDescricao(String descricao) {
 		this.descricao = descricao;
+	}
+
+	public Integer getVendas() {
+		return vendas;
+	}
+
+	public void setVendas(Integer vendas) {
+		this.vendas = vendas;
 	}
     
 }
