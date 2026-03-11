@@ -4,6 +4,6 @@ services:
     image: mysql:8.0
     environment:
       MYSQL_DATABASE: loja_brinquedos
-      MYSQL_ROOT_PASSWORD: root
+      MYSQL_ROOT_PASSWORD: padrao_local
     ports:
       - "3306:3306"

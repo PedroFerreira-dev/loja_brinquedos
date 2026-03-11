@@ -12,7 +12,7 @@ import br.edu.fatecgru.CatalogoBrinquedos.service.BrinquedoService;
 
 @RestController
 @RequestMapping("/api/brinquedos")
-@CrossOrigin(origins = "http://localhost:5173") 
+@CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true")
 public class BrinquedoApiController {
 
     @Autowired
