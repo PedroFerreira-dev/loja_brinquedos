@@ -1,5 +1,6 @@
 package br.edu.fatecgru.CatalogoBrinquedos.model.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -12,37 +13,43 @@ public class Brinquedo {
     @GeneratedValue(strategy = GenerationType.IDENTITY) // Avisa para o banco gerar os números sozinho (1, 2, 3...)
     private Long id;
     
-    private String nome; // Campo para armazenar o nome do brinquedo
-    private Double preco; // Campo para armazenar o preço do brinquedo
-    private String categoria; // Campo para armazenar a categoria do brinquedo (ex: "Ação", "Educativo", "Boneca", etc.)
-    private String caminhoImagem; // Campo para armazenar o caminho da imagem do brinquedo (pode ser uma URL ou um caminho local)
-    private Double desconto; // Campo para controlar o desconto aplicado ao brinquedo (em porcentagem, ex: 10.0 para 10% de desconto)
-    private Integer quantidade; // Campo para controlar a quantidade disponível do brinquedo
-    private Integer vendas; // Campo para controlar o número de vendas do brinquedo
-    private String descricao; // Campo para armazenar uma descrição detalhada do brinquedo (opcional)
+    private String nome; // Descrição/Nome do brinquedo [cite: 88, 106]
+    private String marca; // Campo adicionado para bater com o Admin 
+    private Double preco; // Valor do brinquedo [cite: 94, 112]
+    private String categoria; // Categoria (ex: Heróis, Meninas, Bebês) [cite: 90, 108]
+    private String caminhoImagem; // URL da imagem [cite: 93, 111]
+    private Double desconto; // Porcentagem de desconto
+    private Integer quantidade; // Controle de estoque
+    private Integer vendas; // Contador de vendas para destaques
+    
+    @Column(columnDefinition = "TEXT") // Define como texto longo no banco
+    private String descricao; // Detalhes detalhados do brinquedo 
    
-	// Construtor vazio
+    // Construtor vazio
     public Brinquedo() {
     }
 
-	public Brinquedo(Long id, String nome, Double preco, String categoria, String caminhoImagem, double desconto,
-			Integer quantidade, Integer vendas) {
-		this.id = id;
-		this.nome = nome;
-		this.preco = preco;
-		this.categoria = categoria;
-		this.caminhoImagem = caminhoImagem;
-		this.desconto = desconto;
-		this.quantidade = quantidade;
-		this.vendas = vendas;
-	}
+    // Construtor completo (Atualizado com 'marca' e 'descricao')
+    public Brinquedo(Long id, String nome, String marca, Double preco, String categoria, String caminhoImagem, 
+                     Double desconto, Integer quantidade, Integer vendas, String descricao) {
+        this.id = id;
+        this.nome = nome;
+        this.marca = marca;
+        this.preco = preco;
+        this.categoria = categoria;
+        this.caminhoImagem = caminhoImagem;
+        this.desconto = desconto;
+        this.quantidade = quantidade;
+        this.vendas = vendas;
+        this.descricao = descricao;
+    }
 
-	// Getters e Setters
+    // Getters e Setters
     public Long getId() {
         return id;
     }
 
-	public void setId(Long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -54,6 +61,14 @@ public class Brinquedo {
         this.nome = nome;
     }
 
+    public String getMarca() {
+        return marca;
+    }
+
+    public void setMarca(String marca) {
+        this.marca = marca;
+    }
+
     public Double getPreco() {
         return preco;
     }
@@ -61,51 +76,52 @@ public class Brinquedo {
     public void setPreco(Double preco) {
         this.preco = preco;
     }
+
     public String getCategoria() {
-		return categoria;
-	}
+        return categoria;
+    }
 
-	public void setCategoria(String categoria) {
-		this.categoria = categoria;
-	}
+    public void setCategoria(String categoria) {
+        this.categoria = categoria;
+    }
 
-	public String getCaminhoImagem() {
-		return caminhoImagem;
-	}
+    public String getCaminhoImagem() {
+        return caminhoImagem;
+    }
 
-	public void setCaminhoImagem(String caminhoImagem) {
-		this.caminhoImagem = caminhoImagem;
-	}
+    public void setCaminhoImagem(String caminhoImagem) {
+        this.caminhoImagem = caminhoImagem;
+    }
 
-	public double getDesconto() {
-		return desconto;
-	}
+    public Double getDesconto() {
+        return desconto;
+    }
 
-	public void setDesconto(double desconto) {
-		this.desconto = desconto;
-	}
-	
-	public Integer getQuantidade() {
-		return quantidade;
-	}
-	
-	public void setQuantidade(Integer quantidade) {
-		this.quantidade = quantidade;
-	}
-	
-	public Integer getVendas() {
-		return vendas;
-	}
-	
-	public void setVendas(Integer vendas) {
-		this.vendas = vendas;
-	}
-	
-	public String getDescricao() {
-		return descricao;
-	}
-	
-	public void setDescricao(String descricao) {
-		this.descricao = descricao;
-	}
+    public void setDesconto(Double desconto) {
+        this.desconto = desconto;
+    }
+    
+    public Integer getQuantidade() {
+        return quantidade;
+    }
+    
+    public void setQuantidade(Integer quantidade) {
+        this.quantidade = quantidade;
+    }
+    
+    public Integer getVendas() {
+        return vendas;
+    }
+    
+    public void setVendas(Integer vendas) {
+        this.vendas = vendas;
+    }
+    
+    public String getDescricao() {
+        return descricao;
+    }
+    
+    public void setDescricao(String descricao) {
+        this.descricao = descricao;
+    }
 }

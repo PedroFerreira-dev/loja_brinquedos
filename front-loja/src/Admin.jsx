@@ -2,166 +2,192 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 
-function Admin({ voltarParaLoja, authData }) { // authData vem do login bem-sucedido no App.jsx
+function Admin({ voltarParaLoja, authData }) {
   const [brinquedos, setBrinquedos] = useState([]);
-  const [exibirFormulario, setExibirFormulario] = useState(false);
-  const [editando, setEditando] = useState(null);
+  const [termoBusca, setTermoBusca] = useState('');
+  const [modo, setModo] = useState('listagem'); 
+  const [editandoId, setEditandoId] = useState(null);
+  const [categoriasExistentes, setCategoriasExistentes] = useState([]);
+  const [marcasExistentes, setMarcasExistentes] = useState([]);
 
   const [formData, setFormData] = useState({
-    nome: '', preco: 0.0, categoria: '', caminhoImagem: '', 
-    desconto: 0.0, quantidade: 0, vendas: 0, descricao: ''
+    nome: '', marca: '', categoria: '', preco: 0, 
+    caminhoImagem: '', descricao: ''
   });
 
   const urlApi = "http://localhost:8080/api/brinquedos";
 
-  // IMPORTANTE: Criamos a configuração de autenticação para o Axios
-  const authConfig = { 
-    auth: authData // Pega o {username, password} que você digitou na tela de login
+  // Função de listagem principal
+  const listar = async () => {
+    try {
+      const res = await axios.get(urlApi, { auth: authData });
+      setBrinquedos(res.data);
+    } catch (err) { console.error("Erro ao listar", err); }
   };
 
-  const listarBrinquedos = async () => {
+  // Carregar sugestões para os datalists (Resolvendo Erro 400)
+  const carregarSugestoes = async () => {
+    if (!authData) return;
     try {
-      // Enviamos o authConfig aqui, senão o Java bloqueia a requisição (Erro 401)
-      const res = await axios.get(urlApi, authConfig);
-      setBrinquedos(res.data);
-    } catch (err) {
-      console.error("Erro ao carregar lista admin:", err);
-      if (err.response?.status === 401) {
-        Swal.fire('Sessão Inválida', 'Suas credenciais não foram aceitas pelo servidor.', 'error');
-      }
+      const config = { auth: authData };
+      const [resCat, resMar] = await Promise.all([
+        axios.get(`${urlApi}/categorias`, config),
+        axios.get(`${urlApi}/marcas`, config)
+      ]);
+      setCategoriasExistentes(resCat.data || []);
+      setMarcasExistentes(resMar.data || []);
+    } catch (err) { 
+      console.error("Erro 400: Verifique se a URL /marcas existe no Java", err); 
     }
   };
+
+  useEffect(() => { listar(); }, []);
 
   useEffect(() => {
-    // Só tenta listar se tiver dados de autenticação
-    if (authData) {
-      listarBrinquedos();
-    }
-  }, [authData]);
+    if (modo !== 'listagem') carregarSugestoes();
+  }, [modo]);
 
-  const salvarBrinquedo = async (e) => {
+  const salvar = async (e) => {
     e.preventDefault();
+    const dados = { ...formData, preco: Number(formData.preco) };
     try {
-      const dadosParaEnviar = {
-        ...formData,
-        preco: Number(formData.preco) || 0,
-        desconto: Number(formData.desconto) || 0,
-        quantidade: Number(formData.quantidade) || 0,
-        vendas: Number(formData.vendas) || 0
-      };
-
-      if (editando) {
-        await axios.put(`${urlApi}/${editando}`, dadosParaEnviar, authConfig);
-        Swal.fire('Atualizado!', 'Brinquedo editado com sucesso.', 'success');
+      if (modo === 'editar') {
+        await axios.put(`${urlApi}/${editandoId}`, dados, { auth: authData });
       } else {
-        await axios.post(urlApi, dadosParaEnviar, authConfig);
-        Swal.fire('Salvo!', 'Novo brinquedo cadastrado.', 'success');
+        await axios.post(urlApi, dados, { auth: authData });
       }
-      
-      setExibirFormulario(false);
-      setEditando(null);
-      listarBrinquedos();
-    } catch (err) {
-      Swal.fire('Erro', 'Falha ao salvar. Verifique a conexão com o banco.', 'error');
-    }
+      Swal.fire('Sucesso!', 'Dados gravados com sucesso.', 'success');
+      setModo('listagem');
+      listar();
+    } catch (err) { Swal.fire('Erro', 'Falha ao salvar.', 'error'); }
   };
 
-  const confirmarExclusao = (id) => {
+  const excluir = (id) => {
     Swal.fire({
       title: 'Confirma a exclusão?',
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonText: 'Sim, excluir',
-      cancelButtonText: 'Cancelar'
+      confirmButtonText: 'SIM',
+      cancelButtonText: 'NÃO'
     }).then(async (result) => {
       if (result.isConfirmed) {
-        try {
-          await axios.delete(`${urlApi}/${id}`, authConfig);
-          listarBrinquedos();
-          Swal.fire('Excluído!', 'O item foi removido.', 'success');
-        } catch (err) {
-          Swal.fire('Erro', 'Não foi possível excluir.', 'error');
-        }
+        await axios.delete(`${urlApi}/${id}`, { auth: authData });
+        listar();
       }
     });
   };
 
-  const prepararEdicao = (b) => {
-    setEditando(b.id);
-    setFormData(b);
-    setExibirFormulario(true);
-  };
+  const brinquedosFiltrados = brinquedos.filter(b => 
+    b.nome?.toLowerCase().includes(termoBusca.toLowerCase()) ||
+    b.categoria?.toLowerCase().includes(termoBusca.toLowerCase()) ||
+    b.marca?.toLowerCase().includes(termoBusca.toLowerCase())
+  );
 
-  // Se estiver em modo formulário, renderiza os inputs
-  if (exibirFormulario) {
-    return (
-      <div className="container py-5">
-        <div className="card shadow border-0 p-4">
-          <h4 className="mb-4">{editando ? 'Editar Brinquedo' : 'Cadastrar Novo Brinquedo'}</h4>
-          <form onSubmit={salvarBrinquedo} className="row g-3">
-            <div className="col-md-6">
-              <label className="fw-bold">Nome:</label>
-              <input type="text" className="form-control" value={formData.nome} onChange={e => setFormData({...formData, nome: e.target.value})} required />
-            </div>
-            <div className="col-md-3">
-              <label className="fw-bold">Preço:</label>
-              <input type="number" step="0.01" className="form-control" value={formData.preco} onChange={e => setFormData({...formData, preco: e.target.value})} />
-            </div>
-            <div className="col-md-3">
-              <label className="fw-bold">Quantidade:</label>
-              <input type="number" className="form-control" value={formData.quantidade} onChange={e => setFormData({...formData, quantidade: e.target.value})} />
-            </div>
-            <div className="col-12 mt-4">
-              <button type="submit" className="btn btn-success me-2 fw-bold">SALVAR</button>
-              <button type="button" className="btn btn-secondary" onClick={() => setExibirFormulario(false)}>CANCELAR</button>
-            </div>
-          </form>
-        </div>
-      </div>
-    );
-  }
-
-  // Tabela Principal
+  // ESTRUTURA DE LAYOUT UNIFICADA (Resolve Sidebar Sumindo)
   return (
-    <div className="container py-5">
-      <div className="d-flex justify-content-between align-items-center mb-4">
-        <button className="btn btn-outline-danger fw-bold" onClick={voltarParaLoja}>⬅ VOLTAR</button>
-        <h2 className="text-secondary fw-bold">Painel Administrativo</h2>
-        <button className="btn btn-dark fw-bold" onClick={() => {setEditando(null); setFormData({nome:'', preco:0, categoria:'', caminhoImagem:'', desconto:0, quantidade:0, vendas:0, descricao:''}); setExibirFormulario(true);}}>
-          + NOVO PRODUTO
-        </button>
+    <div className="d-flex" style={{ minHeight: '100vh', backgroundColor: '#f4f7f6' }}>
+      {/* SIDEBAR FIXA */}
+      <div className="bg-dark text-white p-4 shadow" style={{ width: '280px', position: 'fixed', height: '100vh' }}>
+        <h4 className="fw-bold mb-4 border-bottom pb-2 text-center">ToyBox Admin</h4>
+        <ul className="nav flex-column gap-2">
+          <li className={`nav-item btn ${modo === 'listagem' ? 'btn-primary' : 'btn-outline-light'} text-start border-0`} onClick={() => setModo('listagem')}>
+            📦 Ver Catálogo
+          </li>
+          <li className={`nav-item btn ${modo === 'novo' ? 'btn-primary' : 'btn-outline-light'} text-start border-0`} onClick={() => { setModo('novo'); setFormData({nome:'', marca:'', categoria:'', preco:0, caminhoImagem:'', descricao:''}); }}>
+            ➕ Novo Brinquedo
+          </li>
+          <li className="nav-item btn btn-danger mt-5 rounded-pill fw-bold" onClick={voltarParaLoja}>
+            Sair do Painel
+          </li>
+        </ul>
       </div>
 
-      <div className="card shadow-sm border-0">
-        <table className="table table-hover align-middle mb-0">
-          <thead className="table-dark">
-            <tr>
-              <th className="ps-4">Nome</th>
-              <th>Preço</th>
-              <th>Estoque</th>
-              <th className="text-center">Ações</th>
-            </tr>
-          </thead>
-          <tbody>
-            {brinquedos.length > 0 ? (
-              brinquedos.map(b => (
-                <tr key={b.id}>
-                  <td className="ps-4 fw-bold">{b.nome}</td>
-                  <td>R$ {Number(b.preco).toFixed(2).replace('.', ',')}</td>
-                  <td>{b.quantidade} unidades</td>
-                  <td className="text-center">
-                    <button className="btn btn-sm btn-outline-primary me-2" onClick={() => prepararEdicao(b)}>Editar</button>
-                    <button className="btn btn-sm btn-outline-danger" onClick={() => confirmarExclusao(b.id)}>Excluir</button>
-                  </td>
-                </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan="4" className="text-center py-4 text-muted">Nenhum brinquedo encontrado no banco de dados.</td>
-              </tr>
-            )}
-          </tbody>
-        </table>
+      {/* CONTEÚDO DINÂMICO (Listagem ou Formulário) */}
+      <div className="flex-grow-1" style={{ marginLeft: '280px', padding: '40px' }}>
+        
+        {modo === 'listagem' ? (
+          <>
+            <div className="d-flex justify-content-between align-items-center mb-4">
+              <h2 className="text-secondary fw-bold fs-4">Painel de Controle :: Catálogo</h2>
+              <div className="input-group" style={{ maxWidth: '350px' }}>
+                <span className="input-group-text bg-white border-end-0">🔍</span>
+                <input type="text" className="form-control border-start-0 shadow-none" placeholder="Buscar..." value={termoBusca} onChange={(e) => setTermoBusca(e.target.value)} />
+              </div>
+            </div>
+            <div className="card shadow-sm border-0">
+              <table className="table table-hover align-middle mb-0">
+                <thead className="table-light">
+                  <tr><th>Nome</th><th>Marca</th><th>Categoria</th><th>Valor</th><th className="text-center">Ações</th></tr>
+                </thead>
+                <tbody>
+                  {brinquedosFiltrados.map(b => (
+                    <tr key={b.id}>
+                      <td><small className="text-muted me-1">#{b.id}</small> {b.nome}</td>
+                      <td>{b.marca}</td>
+                      <td><span className="badge bg-secondary">{b.categoria}</span></td>
+                      <td>R$ {Number(b.preco).toFixed(2)}</td>
+                      <td className="text-center">
+                        <button className="btn btn-sm btn-info me-2 text-white" onClick={() => { setEditandoId(b.id); setFormData(b); setModo('editar'); }}>Editar</button>
+                        <button className="btn btn-sm btn-danger" onClick={() => excluir(b.id)}>Excluir</button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
+        ) : (
+          /* FORMULÁRIO CENTRALIZADO */
+          <div className="d-flex justify-content-center">
+            <div className="card shadow-lg border-0 w-100" style={{ maxWidth: '700px' }}>
+              <div className="card-header bg-dark text-white p-3 text-center">
+                <h4 className="mb-0">{modo === 'novo' ? 'Novo Cadastro' : 'Editar Produto'}</h4>
+              </div>
+              <form onSubmit={salvar} className="card-body p-4">
+                <div className="row g-3">
+                  <div className="col-md-6">
+                    <label className="fw-bold small">CÓDIGO:</label>
+                    <input className="form-control bg-light" value={modo === 'editar' ? editandoId : 'AUTOMÁTICO'} readOnly />
+                  </div>
+                  <div className="col-md-6">
+                    <label className="fw-bold small">MARCA:</label>
+                    <input list="sugestoesMarcas" className="form-control" value={formData.marca} onChange={e => setFormData({...formData, marca: e.target.value})} placeholder="Selecione ou digite..." />
+                    <datalist id="sugestoesMarcas">
+                      {marcasExistentes.map((m, i) => <option key={i} value={m} />)}
+                    </datalist>
+                  </div>
+                  <div className="col-12">
+                    <label className="fw-bold small">NOME DO BRINQUEDO:</label>
+                    <input className="form-control" required value={formData.nome} onChange={e => setFormData({...formData, nome: e.target.value})} />
+                  </div>
+                  <div className="col-md-6">
+                    <label className="fw-bold small">CATEGORIA:</label>
+                    <input list="sugestoesCategorias" className="form-control" value={formData.categoria} onChange={e => setFormData({...formData, categoria: e.target.value})} placeholder="Selecione ou digite..." />
+                    <datalist id="sugestoesCategorias">
+                      {categoriasExistentes.map((c, i) => <option key={i} value={c} />)}
+                    </datalist>
+                  </div>
+                  <div className="col-md-6">
+                    <label className="fw-bold small">VALOR (R$):</label>
+                    <input type="number" step="0.01" className="form-control" value={formData.preco} onChange={e => setFormData({...formData, preco: e.target.value})} />
+                  </div>
+                  <div className="col-12">
+                    <label className="fw-bold small">URL DA IMAGEM:</label>
+                    <input className="form-control" value={formData.caminhoImagem} onChange={e => setFormData({...formData, caminhoImagem: e.target.value})} />
+                  </div>
+                  <div className="col-12">
+                    <label className="fw-bold small">DESCRIÇÃO:</label>
+                    <textarea className="form-control" rows="2" value={formData.descricao} onChange={e => setFormData({...formData, descricao: e.target.value})}></textarea>
+                  </div>
+                </div>
+                <div className="mt-4 d-flex gap-2">
+                  <button type="submit" className="btn btn-success px-5 fw-bold">SALVAR</button>
+                  <button type="button" className="btn btn-secondary" onClick={() => setModo('listagem')}>CANCELAR</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

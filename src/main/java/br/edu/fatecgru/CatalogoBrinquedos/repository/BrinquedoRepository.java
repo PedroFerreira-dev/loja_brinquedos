@@ -7,23 +7,18 @@ import br.edu.fatecgru.CatalogoBrinquedos.model.entity.Brinquedo;
 
 public interface BrinquedoRepository extends JpaRepository<Brinquedo, Long> {
 
-    // Busca por parte do nome
     List<Brinquedo> findByNomeContainingIgnoreCase(String nome);
 
-    // Busca por categoria exata
     List<Brinquedo> findByCategoria(String categoria);
 
-    // Lista as categorias únicas para o filtro do front
-    @Query("SELECT DISTINCT b.categoria FROM Brinquedo b")
+    @Query("SELECT DISTINCT b.categoria FROM Brinquedo b WHERE b.categoria IS NOT NULL")
     List<String> buscarCategoriasUnicas();
 
-    // Ordenações por preço
+    @Query("SELECT DISTINCT b.marca FROM Brinquedo b WHERE b.marca IS NOT NULL AND b.marca <> ''")
+    List<String> buscarMarcasUnicas();
+
     List<Brinquedo> findAllByOrderByPrecoAsc();
     List<Brinquedo> findAllByOrderByPrecoDesc();
-
-    // Pega os 3 últimos (Novidades)
     List<Brinquedo> findTop3ByOrderByIdDesc();
-    
-    // Pega os 3 mais vendidos (Mais Vendidos)
     List<Brinquedo> findTop3ByOrderByVendasDesc();
 }
