@@ -16,36 +16,36 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @EnableWebSecurity
 public class SecurityConfig {
 
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http
-            // ATIVAÇÃO DO CORS: Essencial para que o Spring Security aceite as 
-            // configurações de permissão vindas do React (localhost:5173)
-            .cors(Customizer.withDefaults()) 
-            
-            .csrf(csrf -> csrf.disable())
-            .authorizeHttpRequests(auth -> auth
-                // 1. O que TODO MUNDO pode fazer (Público)
-                // Incluímos a visualização E a encomenda aqui
-                .requestMatchers(HttpMethod.GET, "/api/brinquedos/**").permitAll()
-                .requestMatchers(HttpMethod.POST, "/api/brinquedos/encomendar/**").permitAll() 
-                
-                // 2. O que só o ADMIN pode fazer (Protegido por Senha)
-                // Basicamente tudo que altera o catálogo ou o estoque administrativo
-                // Alteramos de .hasRole("ADMIN") para .authenticated() para facilitar a 
-                // integração inicial, garantindo que qualquer login válido acesse o Admin.
-                .requestMatchers(HttpMethod.POST, "/api/brinquedos").authenticated()
-                .requestMatchers(HttpMethod.PUT, "/api/brinquedos/**").authenticated()
-                .requestMatchers(HttpMethod.DELETE, "/api/brinquedos/**").authenticated()
-                .requestMatchers(HttpMethod.PATCH, "/api/brinquedos/**").authenticated()
-                
-                // Qualquer outra rota não mapeada exige login
-                .anyRequest().authenticated() 
-            )
-            .httpBasic(Customizer.withDefaults());
+	@Bean
+	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+	    http
+	        .cors(Customizer.withDefaults()) 
+	        .csrf(csrf -> csrf.disable())
+	        .authorizeHttpRequests(auth -> auth
+	            // 1. Público
+	            .requestMatchers(HttpMethod.GET, "/api/brinquedos/**").permitAll()
+	            .requestMatchers(HttpMethod.POST, "/api/brinquedos/encomendar/**").permitAll()
+	            .requestMatchers("/imagens/**").permitAll() // NOVO: Permite ver as fotos salvas
+	            
+	            // 2. Protegido
+	            .requestMatchers(HttpMethod.POST, "/api/brinquedos/upload").authenticated() // NOVO: Protege o endpoint de upload
+	            .requestMatchers(HttpMethod.POST, "/api/brinquedos").authenticated()
+	            .requestMatchers(HttpMethod.PUT, "/api/brinquedos/**").authenticated()
+	            .requestMatchers(HttpMethod.DELETE, "/api/brinquedos/**").authenticated()
+	            .requestMatchers(HttpMethod.PATCH, "/api/brinquedos/**").authenticated()
+	            
+	            .anyRequest().authenticated() 
+	        )
+	        // ALTERADO: Impede o pop-up de login do navegador (Basic Auth Challenge)
+	        .httpBasic(basic -> basic.authenticationEntryPoint((request, response, authException) -> {
+	            // Em vez de retornar o cabeçalho WWW-Authenticate (que abre o pop-up), 
+	            // retornamos apenas o erro 401 puro para o Axios tratar no React.
+	            response.sendError(402, authException.getMessage()); 
+	        }));
 
-        return http.build();
-    }
+	    return http.build();
+	}
+     
 
     @Bean
     public PasswordEncoder passwordEncoder() {

@@ -6,6 +6,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import org.springframework.web.multipart.MultipartFile;
+import java.nio.file.*;
+import java.io.IOException;
+
 import br.edu.fatecgru.CatalogoBrinquedos.dto.BrinquedoRequestDTO;
 import br.edu.fatecgru.CatalogoBrinquedos.dto.BrinquedoResponseDTO;
 import br.edu.fatecgru.CatalogoBrinquedos.service.BrinquedoService;
@@ -72,5 +76,31 @@ public class BrinquedoApiController {
     @PostMapping("/encomendar/{id}")
     public ResponseEntity<BrinquedoResponseDTO> encomendar(@PathVariable Long id) {
         return ResponseEntity.ok(service.encomendarBrinquedo(id));
+    }
+
+    @PostMapping("/upload")
+    public ResponseEntity<String> uploadImagem(@RequestParam("imagem") MultipartFile arquivo) {
+        try {
+            // 1. Define onde salvar (Pasta "uploads" na raiz do projeto)
+            String diretorioDestino = System.getProperty("user.dir") + "/uploads/";
+            Path pathDiretorio = Paths.get(diretorioDestino);
+            
+            // Cria a pasta caso não exista
+            if (!Files.exists(pathDiretorio)) {
+                Files.createDirectories(pathDiretorio);
+            }
+
+            // 2. Gera um nome único para o arquivo para evitar duplicatas
+            String nomeArquivo = System.currentTimeMillis() + "_" + arquivo.getOriginalFilename();
+            Path caminhoCompleto = pathDiretorio.resolve(nomeArquivo);
+            
+            // 3. Salva o arquivo no disco
+            Files.copy(arquivo.getInputStream(), caminhoCompleto, StandardCopyOption.REPLACE_EXISTING);
+
+            // Retorna apenas o nome do arquivo para o React
+            return ResponseEntity.ok(nomeArquivo);
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao salvar imagem localmente.");
+        }
     }
 }
