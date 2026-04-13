@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<!-- Diz ao HTML que será usado Thymeleaf para processar tags Java -->
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catálogo de Brinquedos</title>
+
+    <!-- Importação do Bootstrap para estilização -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body class="bg-light">
+
+    <div class="container mt-5" style="max-width: 900px;">
+        <h1 class="text-center mb-4">🧸 Catálogo de Brinquedos</h1>
+
+        <!-- Card do formulário de cadastro -->
+        <div class="card mb-4 shadow-sm">
+
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Cadastrar / Editar Brinquedo</h5>
+            </div>
+
+            <div class="card-body">
+
+                <!--
+                    th:action → envia os dados para o endpoint /salvar
+                    th:object → vincula o formulário ao objeto "novoBrinquedo" enviado pelo Controller
+                    method="post" → envia os dados para o servidor
+                -->
+                <form th:action="@{/salvar}" th:object="${novoBrinquedo}" method="post" class="row g-3">
+
+                    <!--
+                        Campo oculto usado no UPDATE.
+                        Quando o usuário clicar em editar, o ID será enviado para o backend
+                        permitindo que o JPA atualize o registro ao invés de criar outro.
+                    -->
+                    <input type="hidden" th:field="*{id}">
+
+                    <!-- Campo de nome -->
+                    <div class="col-md-6">
+                        <label for="nome" class="form-label">Nome do Brinquedo</label>
+                        <input type="text"
+                               class="form-control"
+                               id="nome"
+                               th:field="*{nome}"
+                               required>
+                    </div>
+
+                    <!-- Campo de preço -->
+                    <div class="col-md-3">
+                        <label for="preco" class="form-label">Preço (R$)</label>
+                        <input type="number"
+                               step="0.01"
+                               class="form-control"
+                               id="preco"
+                               th:field="*{preco}"
+                               required>
+                    </div>
+
+                    <!-- Campo de desconto -->
+                    <div class="col-md-3">
+                        <label for="desconto" class="form-label">Desconto (%)</label>
+                        <input type="number"
+                               step="0.1"
+                               class="form-control"
+                               id="desconto"
+                               th:field="*{desconto}"
+                               placeholder="Ex: 10.5">
+                    </div>
+
+                    <!-- Campo de categoria -->
+                    <div class="col-md-4">
+                        <label for="categoria" class="form-label">Categoria</label>
+                        <input type="text"
+                               class="form-control"
+                               id="categoria"
+                               th:field="*{categoria}"
+                               placeholder="Ex: Tabuleiro, Ação, Educativo">
+                    </div>
+
+                    <!-- Campo da URL da imagem -->
+                    <div class="col-md-8">
+                        <label for="caminhoImagem" class="form-label">Link da Imagem (URL)</label>
+                        <input type="text"
+                               class="form-control"
+                               id="caminhoImagem"
+                               th:field="*{caminhoImagem}"
+                               placeholder="Cole o link da foto aqui">
+                    </div>
+
+                    <!-- Botão de envio -->
+                    <div class="col-12 text-end mt-4">
+                        <button type="submit" class="btn btn-success px-4">
+                            Salvar no Catálogo
+                        </button>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+
+        <!-- Tabela com listagem dos brinquedos -->
+        <div class="card shadow-sm">
+
+            <div class="card-header bg-dark text-white">
+                <h5 class="mb-0">Catálogo de Brinquedos</h5>
+            </div>
+
+            <div class="card-body p-0">
+
+                <div class="table-responsive">
+
+                    <!-- Tabela que mostra os brinquedos vindos do Controller -->
+                    <table class="table table-hover table-striped align-middle mb-0">
+
+                        <thead class="table-light">
+                            <tr>
+                                <th scope="col" class="text-center">Ações</th>
+                                <th scope="col" class="text-center">ID</th>
+                                <th scope="col" class="text-center">Foto</th>
+                                <th scope="col">Nome</th>
+                                <th scope="col">Categoria</th>
+                                <th scope="col">Preço</th>
+                                <th scope="col">Desconto</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                            <!--
+                                th:each percorre a lista "brinquedos"
+                                cada item da lista vira "brinquedo"
+                            -->
+                            <tr th:each="brinquedo : ${brinquedos}">
+
+                                <!-- Botões de ação -->
+                                <td class="text-center">
+
+                                    <div class="d-flex justify-content-center gap-2">
+
+                                        <!-- Botão editar -->
+                                        <a th:href="@{/editar/{id}(id=${brinquedo.id})}"
+                                           class="btn btn-primary btn-sm">
+                                            Editar
+                                        </a>
+
+                                        <!-- Botão excluir -->
+                                        <a th:href="@{/excluir/{id}(id=${brinquedo.id})}"
+                                           class="btn btn-outline-danger btn-sm"
+                                           onclick="return confirm('Tem certeza que deseja excluir este brinquedo?')">
+                                            Excluir
+                                        </a>
+
+                                    </div>
+
+                                </td>
+
+                                <!-- ID -->
+                                <td th:text="${brinquedo.id}"
+                                    class="text-center fw-bold text-secondary">
+                                    1
+                                </td>
+
+                                <!-- Foto do brinquedo -->
+                                <td class="text-center">
+
+                                    <!-- Se existir imagem -->
+                                    <img th:if="${brinquedo.caminhoImagem != null and !brinquedo.caminhoImagem.isEmpty()}"
+                                         th:src="${brinquedo.caminhoImagem}"
+                                         alt="Foto do Brinquedo"
+                                         style="width: 60px; height: 60px; object-fit: cover; border-radius: 8px; border: 1px solid #ddd;">
+
+                                    <!-- Caso não exista imagem -->
+                                    <span th:unless="${brinquedo.caminhoImagem != null and !brinquedo.caminhoImagem.isEmpty()}"
+                                          class="badge bg-secondary">
+                                        Sem Foto
+                                    </span>
+
+                                </td>
+
+                                <!-- Nome -->
+                                <td th:text="${brinquedo.nome}" class="fw-semibold">
+                                    Nome
+                                </td>
+
+                                <!-- Categoria -->
+                                <td>
+                                    <span class="badge bg-info text-dark"
+                                          th:text="${brinquedo.categoria}">
+                                        Categoria
+                                    </span>
+                                </td>
+
+                                <!-- Preço formatado -->
+                                <td th:text="'R$ ' + ${#numbers.formatDecimal(brinquedo.preco, 1, 'POINT', 2, 'COMMA')}">
+                                    R$ 0,00
+                                </td>
+
+                                <!-- Desconto -->
+                                <td th:text="${brinquedo.desconto != null ? brinquedo.desconto + '%' : '-'}">
+                                    0%
+                                </td>
+
+                            </tr>
+
+                            <!-- Caso não exista nenhum brinquedo -->
+                            <tr th:if="${#lists.isEmpty(brinquedos)}">
+                                <td colspan="7" class="text-center text-muted py-5">
+                                    Nenhum brinquedo cadastrado ainda.
+                                </td>
+                            </tr>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</body>
+</html>
