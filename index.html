@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ToyWorld - O Mundo da Diversão!</title>
+    <link href="./style.css" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="bg-toy-bg">
+
+    <!-- Header / Navbar -->
+    <nav class="fixed top-4 left-4 right-4 z-50">
+        <div class="max-w-7xl mx-auto px-6 py-4 bg-white/80 backdrop-blur-md clay-card border-none flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <div class="w-10 h-10 bg-toy-accent rounded-full flex items-center justify-center text-white">
+                    <i data-lucide="blocks" class="w-6 h-6"></i>
+                </div>
+                <span class="text-2xl font-bold text-toy-primary tracking-tight">ToyWorld</span>
+            </div>
+            
+            <div class="hidden md:flex items-center gap-8 font-bold">
+                <a href="#" class="hover:text-toy-primary transition-colors">Início</a>
+                <a href="#categorias" class="hover:text-toy-primary transition-colors">Categorias</a>
+                <a href="#produtos" class="hover:text-toy-primary transition-colors">Produtos</a>
+            </div>
+
+            <div class="flex items-center gap-4">
+                <div class="relative group hidden sm:block">
+                    <input type="text" id="search-input" placeholder="Buscar brinquedo..." 
+                           class="bg-toy-bg border-none rounded-2xl px-4 py-2 pl-10 focus:ring-2 focus:ring-toy-primary outline-none transition-all w-48 focus:w-64">
+                    <i data-lucide="search" class="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                </div>
+                <button onclick="toggleLoginModal()" class="w-12 h-12 flex items-center justify-center hover:bg-toy-bg rounded-2xl transition-all cursor-pointer text-toy-primary" title="Área do Administrador">
+                    <i data-lucide="user-lock" class="w-6 h-6"></i>
+                </button>
+                <button class="relative w-12 h-12 flex items-center justify-center bg-toy-primary text-white rounded-2xl cursor-pointer hover:bg-toy-secondary transition-all shadow-lg">
+                    <i data-lucide="shopping-cart" class="w-6 h-6"></i>
+                    <span id="cart-count" class="absolute -top-1 -right-1 bg-toy-accent text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full border-2 border-white">0</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="pt-32 pb-16 px-4">
+        <div class="max-w-7xl mx-auto grid lg:grid-cols-2 gap-12 items-center">
+            <div class="space-y-8 text-center lg:text-left">
+                <div class="inline-block px-4 py-2 bg-toy-accent/10 text-toy-accent rounded-full font-black text-sm tracking-widest uppercase">
+                    Novidades de 2026 🚀
+                </div>
+                <h1 class="text-6xl lg:text-8xl font-black text-toy-primary leading-tight">
+                    Onde a <span class="text-toy-accent underline decoration-8 decoration-toy-accent/20">Magia</span> Acontece!
+                </h1>
+                <p class="text-xl text-slate-600 font-medium max-w-xl mx-auto lg:mx-0 leading-relaxed">
+                    Explore nossa coleção exclusiva de brinquedos educativos, action figures e aventuras sem fim. Tudo 100% certificado!
+                </p>
+                <div class="flex flex-wrap gap-4 justify-center lg:justify-start">
+                    <a href="#produtos" class="btn-clay-primary text-lg flex items-center gap-2 group">
+                        Ver Catálogo <i data-lucide="chevron-down" class="w-5 h-5 group-hover:translate-y-1 transition-transform"></i>
+                    </a>
+                    <a href="#novidades" class="btn-clay-accent text-lg">Últimos Lançamentos</a>
+                </div>
+            </div>
+            <div class="relative group">
+                <div class="absolute inset-0 bg-toy-accent/10 rounded-full blur-3xl scale-110 group-hover:scale-125 transition-transform duration-1000"></div>
+                <div class="clay-card aspect-square flex items-center justify-center relative overflow-hidden bg-gradient-to-br from-indigo-50 to-white">
+                    <i data-lucide="rocket" class="w-32 h-32 text-toy-primary animate-bounce"></i>
+                    <div class="absolute bottom-8 right-8 animate-pulse">
+                        <div class="bg-white p-4 rounded-2xl shadow-xl flex items-center gap-3">
+                            <div class="w-12 h-12 bg-green-400 rounded-xl flex items-center justify-center text-white">
+                                <i data-lucide="shield-check" class="w-6 h-6"></i>
+                            </div>
+                            <div>
+                                <p class="text-xs font-bold text-slate-400 uppercase">Segurança</p>
+                                <p class="text-sm font-black">100% Certificado</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Filtros de Categoria -->
+    <section id="categorias" class="py-12 px-4">
+        <div class="max-w-7xl mx-auto">
+            <div class="flex items-center gap-4 overflow-x-auto pb-4 no-scrollbar" id="category-filters">
+                <button onclick="filterByCategory('Todos')" class="clay-card px-8 py-3 font-bold whitespace-nowrap bg-toy-primary text-white border-none cursor-pointer hover:scale-105 active:scale-95 transition-all">Todos</button>
+                <!-- Categorias dinâmicas aqui -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Novidades Section -->
+    <section id="novidades" class="py-12 px-4">
+        <div class="max-w-7xl mx-auto">
+            <div class="flex items-center gap-3 mb-8">
+                <i data-lucide="sparkles" class="text-toy-accent w-8 h-8"></i>
+                <h2 class="text-4xl font-black">Novidades Quentes!</h2>
+            </div>
+            <div id="news-container" class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Carregado via JS -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Produtos Grid Principal -->
+    <section id="produtos" class="py-20 px-4 bg-white/30 rounded-t-[100px] border-t-8 border-white">
+        <div class="max-w-7xl mx-auto">
+            <div class="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
+                <div class="space-y-2">
+                    <span class="text-toy-accent font-black tracking-widest uppercase">Catálogo Completo</span>
+                    <h2 class="text-5xl font-black">Explore por Categoria</h2>
+                </div>
+                <div class="flex gap-4">
+                    <select onchange="orderProducts(this.value)" class="clay-card px-6 py-3 font-bold outline-none cursor-pointer hover:bg-toy-primary hover:text-white transition-colors">
+                        <option value="asc">Menor Preço</option>
+                        <option value="desc">Maior Preço</option>
+                    </select>
+                </div>
+            </div>
+
+            <div id="product-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                <!-- Loader Skeletal -->
+                <div class="clay-card p-6 animate-pulse bg-white/50 h-80"></div>
+                <div class="clay-card p-6 animate-pulse bg-white/50 h-80 shadow-none border-dashed border-slate-200"></div>
+                <div class="clay-card p-6 animate-pulse bg-white/50 h-80"></div>
+                <div class="clay-card p-6 animate-pulse bg-white/50 h-80"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Modal de Login (Admin) -->
+    <div id="login-modal" class="fixed inset-0 z-[100] hidden flex items-center justify-center px-4">
+        <div class="absolute inset-0 bg-toy-text/40 backdrop-blur-sm" onclick="toggleLoginModal()"></div>
+        <div class="clay-card max-w-md w-full p-10 relative bg-white z-10">
+            <button onclick="toggleLoginModal()" class="absolute top-4 right-4 text-slate-400 hover:text-toy-accent transition-colors">
+                <i data-lucide="x" class="w-6 h-6"></i>
+            </button>
+            <div class="text-center mb-8">
+                <div class="w-16 h-16 bg-toy-primary/10 text-toy-primary rounded-2xl flex items-center justify-center mx-auto mb-4">
+                    <i data-lucide="lock" class="w-8 h-8"></i>
+                </div>
+                <h3 class="text-2xl font-black">Área Administrativa</h3>
+                <p class="text-slate-500 font-medium">Entre para gerenciar o catálogo</p>
+            </div>
+            <form onsubmit="handleLogin(event)" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-black mb-2">Usuário</label>
+                    <input type="text" id="login-user" required class="w-full bg-toy-bg border-none rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-toy-primary">
+                </div>
+                <div>
+                    <label class="block text-sm font-black mb-2">Senha</label>
+                    <input type="password" id="login-pass" required class="w-full bg-toy-bg border-none rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-toy-primary">
+                </div>
+                <button type="submit" class="w-full btn-clay-primary text-lg">Entrar no Painel</button>
+            </form>
+            <p id="login-error" class="text-red-500 text-center mt-4 font-bold hidden">Credenciais inválidas!</p>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-toy-text text-white py-20 px-4">
+        <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-12">
+            <div class="space-y-6">
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 bg-toy-accent rounded-full flex items-center justify-center text-white">
+                        <i data-lucide="blocks" class="w-5 h-5"></i>
+                    </div>
+                    <span class="text-2xl font-bold tracking-tight text-white">ToyWorld</span>
+                </div>
+                <p class="text-slate-400 font-medium">A maior loja de brinquedos online do Brasil. Levando diversão para sua casa desde 2024.</p>
+                <div class="flex gap-4">
+                    <a href="#" class="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center hover:bg-toy-accent transition-all">
+                        <i data-lucide="instagram" class="w-5 h-5"></i>
+                    </a>
+                    <a href="#" class="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center hover:bg-toy-accent transition-all text-white">
+                        <i data-lucide="facebook" class="w-5 h-5"></i>
+                    </a>
+                </div>
+            </div>
+            <div>
+                <h4 class="text-lg font-bold mb-6">Loja</h4>
+                <ul class="space-y-4 text-slate-400 font-medium">
+                    <li><a href="#" class="hover:text-white transition-colors">Todos os Brinquedos</a></li>
+                    <li><a href="#" class="hover:text-white transition-colors">Lançamentos</a></li>
+                    <li><a href="#" class="hover:text-white transition-colors">Promoções</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="text-lg font-bold mb-6">Suporte</h4>
+                <ul class="space-y-4 text-slate-400 font-medium">
+                    <li><a href="#" class="hover:text-white transition-colors">Rastrear Pedido</a></li>
+                    <li><a href="#" class="hover:text-white transition-colors">Trocas e Devoluções</a></li>
+                    <li><a href="#" class="hover:text-white transition-colors">Contato</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="text-lg font-bold mb-6">Newsletter</h4>
+                <p class="text-slate-400 font-medium mb-4">Receba novidades e cupons de desconto!</p>
+                <div class="flex gap-2">
+                    <input type="email" placeholder="Seu e-mail" class="bg-white/10 border-none rounded-xl px-4 py-3 w-full outline-none">
+                    <button class="bg-toy-accent p-3 rounded-xl hover:bg-orange-400 transition-all cursor-pointer">
+                        <i data-lucide="send" class="w-6 h-6"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="max-w-7xl mx-auto pt-20 text-center text-slate-500 font-medium border-t border-white/5 mt-10">
+            <p>&copy; 2026 ToyWorld Catalog. Todos os direitos reservados.</p>
+        </div>
+    </footer>
+
+    <!-- Scripts de Integração -->
+    <script>
+        const API_BASE = 'http://localhost:8080/api/brinquedos';
+        lucide.createIcons();
+
+        // 1. CARREGAR DADOS INICIAIS
+        document.addEventListener('DOMContentLoaded', () => {
+            loadCategories();
+            loadNews();
+            loadProducts();
+            
+            // Busca em tempo real
+            document.getElementById('search-input').addEventListener('input', (e) => {
+                const term = e.target.value;
+                if(term.length > 2) searchProducts(term);
+                else if(term.length === 0) loadProducts();
+            });
+        });
+
+        async function loadCategories() {
+            try {
+                const response = await fetch(`${API_BASE}/categorias`);
+                const categories = await response.json();
+                const filterContainer = document.getElementById('category-filters');
+                
+                categories.forEach(cat => {
+                    const btn = document.createElement('button');
+                    btn.className = 'clay-card px-8 py-3 font-bold whitespace-nowrap bg-white hover:bg-toy-primary hover:text-white transition-all cursor-pointer';
+                    btn.textContent = cat;
+                    btn.onclick = () => filterByCategory(cat);
+                    filterContainer.appendChild(btn);
+                });
+            } catch (e) { console.error("Erro categorias:", e); }
+        }
+
+        async function loadNews() {
+            try {
+                const response = await fetch(`${API_BASE}/novidades`);
+                const news = await response.json();
+                renderProductGrid(news, 'news-container');
+            } catch (e) { console.error("Erro novidades:", e); }
+        }
+
+        async function loadProducts() {
+            try {
+                const response = await fetch(API_BASE);
+                const products = await response.json();
+                renderProductGrid(products, 'product-container');
+            } catch (e) { console.error("Erro produtos:", e); }
+        }
+
+        async function filterByCategory(cat) {
+            if(cat === 'Todos') return loadProducts();
+            try {
+                const response = await fetch(`${API_BASE}/filtro?categoria=${cat}`);
+                const products = await response.json();
+                renderProductGrid(products, 'product-container');
+            } catch (e) { console.error("Erro filtro:", e); }
+        }
+
+        async function searchProducts(term) {
+            try {
+                const response = await fetch(`${API_BASE}/buscar?termo=${term}`);
+                const products = await response.json();
+                renderProductGrid(products, 'product-container');
+            } catch (e) { console.error("Erro busca:", e); }
+        }
+
+        async function orderProducts(order) {
+            try {
+                const response = await fetch(`${API_BASE}/ordenar?sentido=${order}`);
+                const products = await response.json();
+                renderProductGrid(products, 'product-container');
+            } catch (e) { console.error("Erro ordenação:", e); }
+        }
+
+        function renderProductGrid(products, containerId) {
+            const container = document.getElementById(containerId);
+            if(products.length === 0) {
+                container.innerHTML = '<p class="col-span-full text-center font-bold text-slate-400 py-20">Nenhum brinquedo encontrado :(</p>';
+                return;
+            }
+            
+            container.innerHTML = products.map(p => `
+                <div class="clay-card p-6 flex flex-col group relative overflow-hidden bg-white border-none">
+                    ${p.quantidade <= 5 ? '<span class="absolute top-4 left-4 bg-red-500 text-white text-[10px] font-black px-2 py-1 rounded-lg z-10 animate-pulse">ÚLTIMAS UNIDADES</span>' : ''}
+                    
+                    <a href="detalhes.html?id=${p.id}" class="block cursor-pointer">
+                        <div class="aspect-square bg-toy-bg rounded-2xl mb-6 flex items-center justify-center relative group-hover:bg-indigo-50 transition-colors">
+                            <i data-lucide="package" class="w-16 h-16 text-toy-primary opacity-20 group-hover:opacity-100 group-hover:scale-110 transition-all duration-500"></i>
+                            ${p.caminhoImagem ? `<img src="${p.caminhoImagem}" class="absolute inset-0 w-full h-full object-contain p-4 group-hover:scale-110 transition-transform duration-500">` : ''}
+                        </div>
+                    </a>
+
+                    <div class="space-y-2 flex-grow">
+                        <div class="flex justify-between items-start">
+                            <span class="text-xs font-black text-toy-accent uppercase tracking-widest">${p.categoria}</span>
+                            <span class="text-[10px] font-bold text-slate-400">Estoque: ${p.quantidade}</span>
+                        </div>
+                        <a href="detalhes.html?id=${p.id}" class="hover:text-toy-primary transition-colors block">
+                            <h3 class="text-xl font-black leading-tight">${p.nome}</h3>
+                        </a>
+                        <p class="text-sm text-slate-400 font-medium line-clamp-2">${p.descricao || 'Sem descrição.'}</p>
+                        
+                        <div class="flex items-center justify-between pt-4">
+                            <div>
+                                ${p.desconto > 0 ? `<span class="text-xs text-slate-400 line-through font-bold">R$ ${(p.preco / (1 - p.desconto/100)).toFixed(2)}</span>` : ''}
+                                <div class="text-2xl font-black text-toy-text">R$ ${p.preco.toFixed(2)}</div>
+                            </div>
+                            <button onclick="encomendar(${p.id})" ${p.quantidade === 0 ? 'disabled' : ''} 
+                                    class="w-12 h-12 bg-toy-primary text-white rounded-2xl flex items-center justify-center hover:bg-toy-secondary transition-all cursor-pointer active:scale-90 shadow-lg disabled:bg-slate-300 disabled:cursor-not-allowed group/btn">
+                                <i data-lucide="shopping-bag" class="w-6 h-6 group-hover/btn:animate-bounce"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+            lucide.createIcons();
+        }
+
+        // 2. ENCOMENDAR (Ação Pública)
+        async function encomendar(id) {
+            try {
+                const response = await fetch(`${API_BASE}/encomendar/${id}`, { method: 'POST' });
+                if(response.ok) {
+                    showToast("Encomendado com sucesso! 🎉", "success");
+                    loadProducts(); // Atualiza o estoque na tela
+                    updateCartCount();
+                } else {
+                    showToast("Estoque insuficiente!", "error");
+                }
+            } catch (e) { showToast("Erro ao processar pedido.", "error"); }
+        }
+
+        let cartCount = 0;
+        function updateCartCount() {
+            cartCount++;
+            document.getElementById('cart-count').textContent = cartCount;
+        }
+
+        // 3. ADMIN & LOGIN
+        function toggleLoginModal() {
+            const modal = document.getElementById('login-modal');
+            modal.classList.toggle('hidden');
+        }
+
+        async function handleLogin(e) {
+            e.preventDefault();
+            const user = document.getElementById('login-user').value;
+            const pass = document.getElementById('login-pass').value;
+            const error = document.getElementById('login-error');
+
+            const credentials = btoa(`${user}:${pass}`);
+            
+            try {
+                // Testamos contra a rota raiz do API, mas enviando o header. 
+                // Se o CORS no Eclipse estiver com .allowedHeaders("*"), isso vai funcionar.
+                const response = await fetch(`${API_BASE}`, {
+                    method: 'GET',
+                    headers: { 
+                        'Authorization': `Basic ${credentials}`,
+                        'Accept': 'application/json'
+                    }
+                });
+
+                if(response.ok) {
+                    localStorage.setItem('toy_auth', credentials);
+                    window.location.href = 'admin.html';
+                } else {
+                    console.error("Erro na resposta:", response.status);
+                    error.classList.remove('hidden');
+                    error.textContent = response.status === 401 ? "Usuário ou senha incorretos!" : "Erro de permissão (CORS)!";
+                }
+            } catch (e) { 
+                console.error("Erro de rede/CORS:", e);
+                error.classList.remove('hidden');
+                error.textContent = "Erro de conexão com o servidor!";
+            }
+        }
+
+        // Util: Toast notification simples
+        function showToast(msg, type) {
+            const toast = document.createElement('div');
+            toast.className = `fixed bottom-8 left-1/2 -translate-x-1/2 px-8 py-4 rounded-2xl font-black text-white shadow-2xl z-[200] animate-bounce ${type === 'success' ? 'bg-green-500' : 'bg-red-500'}`;
+            toast.textContent = msg;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+    </script>
+
+    <style>
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</body>
+</html>

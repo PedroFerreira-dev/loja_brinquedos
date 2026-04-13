@@ -1,0 +1,23 @@
+# Pastas de dependências
+node_modules/
+.pnp
+.pnp.js
+
+# Produção / Build
+style.css
+dist/
+build/
+
+# Backend (Ignorar a cópia local que fizemos)
+backend/
+
+# Arquivos de Sistema e IDE
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.log
+
+# Variáveis de ambiente
+.env
+.env.local
