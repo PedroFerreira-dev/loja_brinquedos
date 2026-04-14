@@ -9,7 +9,7 @@ dist/
 build/
 
 # Backend (Ignorar a cópia local que fizemos)
-backend/
+ReferenciaBackend/
 
 # Arquivos de Sistema e IDE
 .DS_Store

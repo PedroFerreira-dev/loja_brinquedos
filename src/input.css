@@ -1,15 +1,17 @@
 @import "tailwindcss";
 
-@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;600;700&family=Comic+Neue:wght@300;400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@300;400;500;600;700&display=swap');
 
 @theme {
-  --font-heading: "Baloo 2", sans-serif;
-  --font-body: "Comic Neue", sans-serif;
+  --font-heading: "Fredoka", sans-serif;
+  --font-body: "Nunito", sans-serif;
   --color-toy-primary: #4F46E5;
-  --color-toy-secondary: #818CF8;
+  --color-toy-secondary: #6366F1;
   --color-toy-accent: #F97316;
-  --color-toy-bg: #EEF2FF;
-  --color-toy-text: #1E1B4B;
+  --color-toy-bg: #F8FAFC;
+  --color-toy-text: #0F172A;
+  --color-toy-muted: #64748B;
+  --color-toy-surface: #FFFFFF;
 }
 
 @layer base {
@@ -17,40 +19,54 @@
     font-family: var(--font-body);
     background-color: var(--color-toy-bg);
     color: var(--color-toy-text);
+    -webkit-font-smoothing: antialiased;
   }
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-heading);
+    font-weight: 700;
   }
 }
 
 @layer components {
   .clay-card {
-    @apply bg-white rounded-3xl border-4 border-white transition-all duration-300;
-    box-shadow: 0 10px 30px rgba(79, 70, 229, 0.1), inset 0 -4px 8px rgba(0, 0, 0, 0.05);
+    @apply bg-toy-surface rounded-3xl border border-slate-200 transition-all duration-300;
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
   }
   
   .clay-card:hover {
-    @apply -translate-y-2;
-    box-shadow: 0 20px 40px rgba(79, 70, 229, 0.15), inset 0 -4px 8px rgba(0, 0, 0, 0.05);
+    @apply -translate-y-1 shadow-xl border-toy-primary/20;
   }
 
   .btn-clay-primary {
-    @apply bg-toy-primary text-white font-bold py-3 px-8 rounded-2xl transition-all duration-200 active:scale-95 cursor-pointer;
-    box-shadow: 0 4px 0 #3730A3, 0 10px 20px rgba(79, 70, 229, 0.3);
+    @apply bg-toy-primary text-white font-bold py-3 px-8 rounded-2xl transition-all duration-200 active:scale-95 cursor-pointer flex items-center justify-center gap-2;
+    box-shadow: 0 4px 0 #3730A3;
   }
 
   .btn-clay-primary:hover {
-    @apply bg-toy-secondary;
-    box-shadow: 0 2px 0 #3730A3, 0 5px 10px rgba(79, 70, 229, 0.3);
+    @apply bg-toy-secondary -translate-y-0.5;
+    box-shadow: 0 6px 0 #3730A3;
+  }
+  
+  .btn-clay-primary:active {
+    @apply translate-y-1;
+    box-shadow: 0 0 0 #3730A3;
   }
 
   .btn-clay-accent {
-    @apply bg-toy-accent text-white font-bold py-3 px-8 rounded-2xl transition-all duration-200 active:scale-95 cursor-pointer;
-    box-shadow: 0 4px 0 #C2410C, 0 10px 20px rgba(249, 115, 22, 0.3);
+    @apply bg-toy-accent text-white font-bold py-3 px-8 rounded-2xl transition-all duration-200 active:scale-95 cursor-pointer flex items-center justify-center gap-2;
+    box-shadow: 0 4px 0 #C2410C;
   }
 
   .btn-clay-accent:hover {
-    @apply bg-orange-400;
-    box-shadow: 0 2px 0 #C2410C, 0 5px 10px rgba(249, 115, 22, 0.3);
+    @apply bg-orange-400 -translate-y-0.5;
+    box-shadow: 0 6px 0 #C2410C;
   }
+
+  .btn-clay-accent:active {
+    @apply translate-y-1;
+    box-shadow: 0 0 0 #C2410C;
+  }
+
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 }

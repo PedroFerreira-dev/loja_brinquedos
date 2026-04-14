@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html class="light" lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>ToyJoy | Meu Perfil</title>
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Be+Vietnam+Pro:wght@300;400;500;600&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-primary-container": "#002b52", "surface": "#f6f6ff", "primary-dim": "#005192",
+                        "tertiary-fixed-dim": "#eda600", "primary": "#005da7", "on-background": "#1d2e51",
+                        "secondary": "#1e57b6", "primary-container": "#68abff", "on-error-container": "#570008",
+                        "on-primary": "#eef3ff", "on-secondary-fixed": "#003174", "outline": "#66769e",
+                        "error-dim": "#9f0519", "on-secondary-container": "#00439a", "outline-variant": "#9cadd7",
+                        "on-primary-fixed-variant": "#003461", "on-secondary": "#f0f2ff", "on-tertiary-container": "#523700",
+                        "secondary-fixed": "#c0d1ff", "tertiary-dim": "#6b4900", "surface-tint": "#005da7",
+                        "on-secondary-fixed-variant": "#054cab", "on-tertiary-fixed-variant": "#5e4000",
+                        "surface-container-lowest": "#ffffff", "surface-bright": "#f6f6ff", "primary-fixed-dim": "#599ef1",
+                        "on-tertiary-fixed": "#382400", "secondary-container": "#c0d1ff", "background": "#f6f6ff",
+                        "tertiary": "#7b5400", "inverse-primary": "#68abff", "surface-container": "#e1e8ff",
+                        "surface-container-high": "#d9e2ff", "surface-container-highest": "#d0dcff",
+                        "secondary-fixed-dim": "#abc3ff", "tertiary-fixed": "#feb300", "error": "#b31b25",
+                        "on-surface-variant": "#4b5b81", "on-error": "#ffefee", "surface-variant": "#d0dcff",
+                        "inverse-surface": "#000d29", "on-primary-fixed": "#000c1e", "on-surface": "#1d2e51",
+                        "on-tertiary": "#fff1df", "surface-container-low": "#edf0ff", "inverse-on-surface": "#8c9cc6",
+                        "error-container": "#fb5151", "primary-fixed": "#68abff", "tertiary-container": "#feb300",
+                        "secondary-dim": "#024baa", "surface-dim": "#c4d4ff"
+                    },
+                    "borderRadius": { "DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px" },
+                    "fontFamily": { "headline": ["Plus Jakarta Sans"], "body": ["Be Vietnam Pro"] }
+                }
+            }
+        }
+    </script>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
+        body {
+            font-family: 'Be Vietnam Pro', sans-serif;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5 {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+    </style>
+</head>
+
+<body class="bg-surface text-on-surface flex flex-col min-h-screen">
+
+    <!-- TopNavBar -->
+    <header class="w-full z-50 bg-surface">
+        <div class="flex justify-between items-center px-8 py-6 w-full max-w-7xl mx-auto">
+            <div class="flex items-center gap-12">
+                <a class="text-2xl font-black tracking-tight text-on-surface flex items-center gap-2" href="index.html">
+                    ToyJoy
+                </a>
+                <nav
+                    class="hidden lg:flex items-center gap-8 font-plus-jakarta text-sm font-bold text-on-surface-variant">
+                    <a class="hover:text-primary transition-colors" href="index.html#catalogo">Catálogo</a>
+                    <a class="hover:text-primary transition-colors" href="index.html#novidades">Novidades</a>
+                    <a class="hover:text-primary transition-colors" href="index.html#promocoes">Promoções</a>
+                    <a class="hover:text-primary transition-colors" href="#">Suporte</a>
+                </nav>
+            </div>
+            <div class="flex items-center gap-6 text-on-surface-variant">
+                <a href="index.html" class="hover:text-primary transition-colors flex"><span
+                        class="material-symbols-outlined">shopping_cart</span></a>
+                <a href="perfil.html" class="text-primary flex"><span
+                        class="material-symbols-outlined text-3xl">account_circle</span></a>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-1 w-full max-w-7xl mx-auto px-8 py-8 grid grid-cols-1 lg:grid-cols-[320px_1fr] gap-12">
+
+        <!-- SIDEBAR -->
+        <aside class="space-y-6">
+            <!-- Bloquinho da Foto e Menu -->
+            <div class="bg-surface-container-lowest rounded-[2.5rem] p-8 shadow-sm flex flex-col items-center">
+                <h2 id="profile-name" class="text-xl font-bold text-on-surface mb-1 mt-2">Carregando...</h2>
+                <p id="profile-email" class="text-sm font-medium text-outline-variant mb-8">...</p>
+
+                <nav class="w-full space-y-2 flex flex-col items-start font-bold">
+                    <a href="#"
+                        class="w-full flex items-center gap-4 bg-primary text-white px-6 py-4 rounded-full transition-all">
+                        <span class="material-symbols-outlined text-[20px]">shopping_bag</span> Meus Pedidos
+                    </a>
+                    <button onclick="performLogout()"
+                        class="w-full flex items-center gap-4 text-error font-bold hover:bg-error/10 px-6 py-4 rounded-full transition-all text-left">
+                        <span class="material-symbols-outlined text-[20px]">logout</span> Sair
+                    </button>
+                    <button onclick="deactivateAccount()"
+                        class="w-full flex items-center gap-4 text-error-dim font-bold hover:bg-error-dim/10 px-6 py-4 rounded-full transition-all text-left group mt-4">
+                        <span
+                            class="material-symbols-outlined text-[20px] group-hover:animate-bounce">person_cancel</span>
+                        Excluir Conta
+                    </button>
+                </nav>
+            </div>
+
+            <!-- Dados de Entrega / Info -->
+            <div class="bg-[#f0f2ff] rounded-[2.5rem] p-8 mt-6">
+                <h3 class="text-primary font-bold text-xs uppercase tracking-widest mb-6">Dados de Envio</h3>
+                <div class="mb-6">
+                    <span class="text-[10px] text-outline-variant font-bold uppercase block mb-1">CPF</span>
+                    <span id="profile-cpf" class="text-sm font-bold text-on-surface">...</span>
+                </div>
+                <div>
+                    <span class="text-[10px] text-outline-variant font-bold uppercase block mb-1">Endereço
+                        Principal</span>
+                    <p id="profile-address" class="text-sm font-bold text-on-surface leading-snug">...</p>
+                </div>
+            </div>
+        </aside>
+
+        <!-- MAIN AREA -->
+        <section>
+            <div class="mb-8">
+                <h1 class="text-4xl font-headline font-black text-on-surface text-on-surface tracking-tight mb-2">
+                    Histórico de Pedidos</h1>
+                <p class="text-outline-variant font-medium">Você tem <span id="order-count-text"
+                        class="text-primary font-bold">0</span> pedidos realizados</p>
+            </div>
+
+            <div id="orders-container" class="space-y-6">
+                <!-- Pedidos listados aqui -->
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer / Equipe -->
+    <footer class="rounded-t-[3rem] mt-auto bg-surface-container-low dark:bg-slate-950 mt-20" id="equipe">
+        <div class="w-full px-12 py-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-7xl mx-auto">
+            <div class="col-span-1 lg:col-span-1">
+                <a class="text-xl font-bold text-blue-900 mb-6 block" href="#">ToyJoy</a>
+                <p class="text-slate-500 text-sm mb-8">© 2026 ToyJoy. Brinque com Propósito.</p>
+                <div class="flex gap-4">
+                    <a class="w-8 h-8 flex items-center justify-center rounded-full bg-white text-primary hover:bg-primary hover:text-white transition-colors shadow-sm"
+                        href="https://github.com/PedroFerreira-dev/loja_brinquedos" target="_blank" title="GitHub">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                            class="bi bi-github" viewBox="0 0 16 16">
+                            <path
+                                d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8" />
+                        </svg>
+                    </a>
+                </div>
+            </div>
+            <div class="col-span-1 lg:col-span-3">
+                <h3 class="font-plus-jakarta text-xs uppercase tracking-widest text-blue-600 mb-8">Créditos da Equipe
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- Team Card 1 -->
+                    <div
+                        class="bg-white p-6 rounded-lg shadow-sm flex items-center gap-4 group hover:shadow-md transition-all">
+                        <div
+                            class="w-12 h-12 rounded-full bg-secondary-fixed flex items-center justify-center overflow-hidden">
+                            <img src="fotos.jpg" alt="Pedro Ferreira" class="w-full h-full object-cover object-top">
+                        </div>
+                        <div>
+                            <p class="font-bold text-on-surface">Pedro Ferreira</p>
+                            <p class="text-xs text-outline-variant">Desenvolvedor</p>
+                        </div>
+                    </div>
+                    <!-- Team Card 2 -->
+                    <div
+                        class="bg-white p-6 rounded-lg shadow-sm flex items-center gap-4 group hover:shadow-md transition-all">
+                        <div
+                            class="w-12 h-12 rounded-full bg-tertiary-container flex items-center justify-center overflow-hidden">
+                            <span class="material-symbols-outlined text-on-tertiary-container">person</span>
+                        </div>
+                        <div>
+                            <p class="font-bold text-on-surface">José Edglê</p>
+                            <p class="text-xs text-outline-variant">Desenvolvedor</p>
+                        </div>
+                    </div>
+                    <!-- Team Card 3 -->
+                    <div
+                        class="bg-white p-6 rounded-lg shadow-sm flex items-center gap-4 group hover:shadow-md transition-all">
+                        <div
+                            class="w-12 h-12 rounded-full bg-primary-container flex items-center justify-center overflow-hidden">
+                            <span class="material-symbols-outlined text-on-primary-container">person</span>
+                        </div>
+                        <div>
+                            <p class="font-bold text-on-surface">Davi Publio</p>
+                            <p class="text-xs text-outline-variant">Diretor Criativo</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        const API_BASE = 'http://localhost:8080/api/brinquedos';
+        const AUTH = localStorage.getItem('toy_auth');
+        const USER = JSON.parse(localStorage.getItem('toy_user') || '{}');
+
+        if (!AUTH) window.location.href = 'index.html';
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderProfile();
+            loadOrders();
+        });
+
+        function renderProfile() {
+            document.getElementById('profile-name').textContent = USER.nome || USER.login || 'Usuário';
+            document.getElementById('profile-email').textContent = USER.email || 'Não informado';
+            document.getElementById('profile-cpf').textContent = USER.cpf || 'Não informado';
+            document.getElementById('profile-address').textContent = USER.endereco || 'Não informado';
+        }
+
+        async function loadOrders() {
+            try {
+                const response = await fetch(`${API_BASE}/historico`, { headers: { 'Authorization': `Basic ${AUTH}` } });
+                const orders = await response.json();
+                renderOrders(orders);
+            } catch (e) {
+                console.error("Erro", e);
+            }
+        }
+
+        function renderOrders(orders) {
+            const container = document.getElementById('orders-container');
+            if (!Array.isArray(orders)) return;
+            document.getElementById('order-count-text').textContent = orders.length;
+
+            if (orders.length === 0) {
+                container.innerHTML = `<div class="bg-surface-container-lowest rounded-3xl p-16 text-center border border-surface-container"><span class="material-symbols-outlined text-outline-variant text-6xl mb-6">inventory_2</span><h3 class="text-xl font-bold text-on-surface mb-2">Nenhuma compra.</h3></div>`;
+                return;
+            }
+
+            container.innerHTML = orders.map(o => {
+                const preco = o.precoNaData || 0;
+                let statusCls = "bg-[#dbeafe] text-[#1e40af]"; // Em transito / Processando format
+                let statusLabel = "EM TRÂNSITO";
+
+                if (o.status === "PROCESSANDO") { statusCls = "bg-[#fef3c7] text-[#92400e]"; statusLabel = "PROCESSANDO"; }
+                else if (o.status === "ENTREGUE") { statusCls = "bg-[#d1fae5] text-[#065f46]"; statusLabel = "ENTREGUE"; }
+                else if (o.status === "CANCELADO") { statusCls = "bg-[#fee2e2] text-[#991b1b]"; statusLabel = "CANCELADO"; }
+                else if (o.status === "ENVIADO") { statusCls = "bg-[#dbeafe] text-[#1e40af]"; statusLabel = "EM TRÂNSITO"; }
+
+                const formatData = o.dataPedido ? new Date(o.dataPedido).toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' }) : 'Data N/A';
+
+                return `
+                <div class="bg-surface-container-lowest rounded-3xl p-6 shadow-sm border border-surface-container flex flex-col md:flex-row md:items-center gap-6">
+                    <div class="w-32 h-32 bg-surface-container/30 rounded-2xl flex items-center justify-center overflow-hidden shrink-0">
+                        <span class="material-symbols-outlined text-outline-variant text-5xl">toys</span>
+                    </div>
+                    <div class="flex-1 flex flex-col">
+                        <div class="flex items-center gap-3 mb-2">
+                            <span class="px-3 py-1 ${statusCls} rounded-full text-[10px] font-black tracking-widest uppercase">${statusLabel}</span>
+                            <span class="text-xs text-outline font-bold uppercase tracking-widest">ORD-${(o.id || 0).toString().padStart(4, '0')}</span>
+                        </div>
+                        <h4 class="text-xl font-bold text-on-surface mb-1">${o.nomeBrinquedo || 'Brinquedo'}</h4>
+                        <p class="text-sm font-medium text-outline-variant">Comprado em ${formatData}</p>
+                    </div>
+                    <div class="flex flex-col md:items-end gap-3 shrink-0">
+                        <span class="text-2xl font-black text-on-surface">R$ ${preco.toFixed(2).replace('.', ',')}</span>
+                        ${o.status === 'ENVIADO' 
+                            ? `<button onclick="confirmDelivery(${o.id})" class="px-6 py-2.5 bg-blue-600 text-white hover:bg-blue-700 rounded-full font-bold text-sm transition-colors text-center shadow-md">Confirmar Entrega</button>` 
+                            : ''
+                        }
+                    </div>
+                </div>
+                `;
+            }).join('');
+        }
+
+        async function confirmDelivery(id) {
+            if(!confirm("O pedido chegou certinho na sua casa? Confirmar a entrega?")) return;
+            const apiUrl = `${API_BASE}/encomendar/${id}/confirmar`;
+            try {
+                const response = await fetch(apiUrl, { method: 'POST', headers: { 'Authorization': `Basic ${AUTH}` } });
+                if(response.ok) {
+                    alert("Que bom! Entrega confirmada com sucesso!");
+                    loadOrders(); 
+                } else {
+                    alert("Erro ao confirmar entrega.");
+                }
+            } catch (e) { alert("Erro de conexão."); }
+        }
+
+        async function deactivateAccount() {
+            if (!confirm("TEM CERTEZA ABSOLUTA?")) return;
+            const apiUrl = API_BASE.replace('/brinquedos', '/usuarios/me');
+            fetch(apiUrl, { method: 'DELETE', headers: { 'Authorization': `Basic ${AUTH}` } }).then(response => {
+                if (response.ok) { localStorage.clear(); window.location.href = 'index.html'; }
+            });
+        }
+        function performLogout() { localStorage.clear(); window.location.href = 'index.html'; }
+    </script>
+</body>
+
+</html>
