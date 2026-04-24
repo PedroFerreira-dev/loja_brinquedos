@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html class="light" lang="pt-BR">
+<head>
+    <link rel="icon" type="image/png" href="icon.png">
+    <meta charset="utf-8"/>
+    <title>ToyToy - Detalhes do Brinquedo</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <link href="https://fonts.googleapis.com" rel="preconnect"/>
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Be+Vietnam+Pro:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#005da7",
+                        "primary-dim": "#005192",
+                        secondary: "#1e57b6",
+                        tertiary: "#7b5400",
+                        surface: "#f6f6ff",
+                        "on-surface": "#1d2e51",
+                        outline: "#66769e",
+                        "outline-variant": "#9cadd7",
+                        error: "#b31b25"
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Be Vietnam Pro', sans-serif; scroll-behavior: smooth; }
+        h1, h2, h3 { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="bg-surface text-on-surface min-h-screen">
+    <!-- Cabeçalho -->
+    <header class="fixed top-0 w-full z-50 rounded-b-[3rem] bg-white/70 backdrop-blur-xl shadow-lg">
+        <div class="flex justify-between items-center px-8 py-4 w-full max-w-7xl mx-auto">
+            <div class="flex items-center gap-8">
+                <a class="text-2xl font-black tracking-tight text-blue-700 flex items-center gap-2" href="index.html">
+                    <img src="icon.png" alt="ToyToy Logo" class="h-10 w-10 object-contain">
+                    ToyToy
+                </a>
+                <nav class="hidden lg:flex items-center gap-4 text-sm font-semibold">
+                    <a class="text-slate-600 hover:text-blue-500 transition-all duration-300" href="index.html#novidades">Novidades</a>
+                    <a class="text-slate-600 hover:text-blue-500 transition-all duration-300" href="index.html#promocoes">Promoções</a>
+                    <a class="text-slate-600 hover:text-blue-500 transition-all duration-300" href="index.html#dia-do-heroi">Dia do Herói</a>
+                    <a class="text-slate-600 hover:text-blue-500 transition-all duration-300" href="index.html#catalogo">Catálogo</a>
+                    <a class="text-slate-600 hover:text-blue-500 transition-all duration-300" href="index.html#equipe">Equipe</a>
+                </nav>
+            </div>
+            <div class="flex items-center gap-2 flex-1 justify-end">
+                <div class="relative w-full max-w-[220px] group">
+                    <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-sm">search</span>
+                    <input class="w-full bg-surface-container-low border-none rounded-full pl-9 pr-4 py-2 focus:ring-2 focus:ring-primary text-xs transition-all" id="search-input" autocomplete="off" placeholder="Buscar brinquedos..." type="text" />
+                    <div id="search-suggestions" class="absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl shadow-xl border border-surface-variant z-[100] hidden max-h-80 overflow-y-auto p-2"></div>
+                </div>
+                <div class="flex items-center gap-1" id="auth-section">
+                    <button class="p-2 text-slate-600 hover:bg-blue-50/50 rounded-full transition-transform active:scale-90" id="btn-entrar" onclick="toggleLoginModal()">
+                        <span class="material-symbols-outlined">person</span>
+                    </button>
+                    <div class="hidden items-center gap-1" id="user-menu">
+                        <span id="user-name-display" class="hidden lg:inline text-[12px] font-bold text-on-surface mr-1"></span>
+                        <a href="perfil.html" id="profile-link" class="p-2 text-primary hover:bg-primary/10 rounded-full transition-transform active:scale-90" title="Meu Perfil"><span class="material-symbols-outlined">account_circle</span></a>
+                        <a href="admin.html" id="admin-link" class="hidden p-2 text-pink-500 hover:bg-pink-50 rounded-full transition-transform active:scale-90" title="Painel Admin"><span class="material-symbols-outlined">admin_panel_settings</span></a>
+                        <button onclick="logout()" class="p-2 text-error hover:bg-error/10 rounded-full transition-transform active:scale-90" title="Sair"><span class="material-symbols-outlined">logout</span></button>
+                    </div>
+                    <button class="relative p-2 text-slate-600 hover:bg-blue-50/50 rounded-full transition-transform active:scale-90 cursor-pointer" onclick="toggleCartModal()">
+                        <span class="material-symbols-outlined">shopping_cart</span>
+                        <span id="cart-count" class="absolute -top-1 -right-1 w-4 h-4 bg-tertiary text-[10px] flex items-center justify-center text-white rounded-full font-bold hidden">0</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="pt-32 pb-20 max-w-7xl mx-auto px-8">
+        <div id="toy-detail-container" class="bg-white rounded-[3rem] shadow-xl overflow-hidden flex flex-col lg:flex-row min-h-[600px] animate-in fade-in duration-700">
+            <div class="w-full flex items-center justify-center p-20 text-slate-300">
+                <span class="material-symbols-outlined animate-spin text-5xl">refresh</span>
+            </div>
+        </div>
+
+        <section class="mt-20">
+            <h2 class="text-3xl font-black text-on-surface mb-10">Você também pode gostar</h2>
+            <div id="similar-products-container" class="grid grid-cols-1 md:grid-cols-4 gap-8"></div>
+        </section>
+    </main>
+
+    <!-- Rodapé -->
+    <footer class="rounded-t-[4rem] mt-20 bg-slate-50 border-t-8 border-white" id="equipe">
+        <div class="max-w-7xl mx-auto px-12 py-16 grid grid-cols-1 lg:grid-cols-4 gap-12">
+            <div>
+                <a class="text-3xl font-black text-primary mb-6 block" href="#">ToyToy</a>
+                <p class="text-slate-500 text-sm mb-8 leading-relaxed">O futuro do brincar começa aqui na ToyToy.</p>
+            </div>
+            <div class="col-span-3">
+                <div class="flex flex-col md:flex-row md:items-center justify-between mb-10 gap-4">
+                    <h3 class="text-xs uppercase tracking-[0.2em] text-primary font-black">Equipe de Desenvolvimento</h3>
+                    <button onclick="toggleTeamModal()" class="text-primary text-sm font-bold hover:underline flex items-center gap-1 transition-all active:scale-95">
+                        Conhecer a Equipe <span class="material-symbols-outlined text-[16px]">visibility</span>
+                    </button>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 flex items-center gap-4 hover:shadow-md transition-shadow">
+                        <img src="fotos.jpg" class="w-14 h-14 rounded-full object-cover object-top border-4 border-primary/10">
+                        <div><p class="font-black text-on-surface">Pedro Ferreira</p><p class="text-xs text-slate-400 font-bold">Desenvolvedor</p></div>
+                    </div>
+                    <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 flex items-center gap-4 hover:shadow-md transition-shadow">
+                        <img src="edgle.jpg" class="w-14 h-14 rounded-full object-cover object-top border-4 border-primary/10">
+                        <div><p class="font-black text-on-surface">José Edglê</p><p class="text-xs text-slate-400 font-bold">Desenvolvedor</p></div>
+                    </div>
+                    <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 flex items-center gap-4 hover:shadow-md transition-shadow">
+                        <img src="davi.jpg" class="w-14 h-14 rounded-full object-cover object-top border-4 border-primary/10">
+                        <div><p class="font-black text-on-surface">Davi Publio</p><p class="text-xs text-slate-400 font-bold">Desenvolvedor</p></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Modais -->
+    <div id="login-modal" class="fixed inset-0 z-[100] hidden flex items-center justify-center px-4 bg-on-surface/40 backdrop-blur-sm">
+        <div class="absolute inset-0" onclick="toggleLoginModal()"></div>
+        <div class="bg-white max-w-md w-full p-10 relative z-10 rounded-[2.5rem] shadow-2xl">
+            <button onclick="toggleLoginModal()" class="absolute top-6 right-6 text-slate-400 p-2 bg-slate-50 rounded-full flex items-center justify-center"><span class="material-symbols-outlined">close</span></button>
+            <div id="login-tab">
+                <h3 class="text-3xl font-black text-center mb-8">Bem-vindo!</h3>
+                <form onsubmit="handleLogin(event)" class="space-y-4">
+                    <input type="text" id="login-user" placeholder="E-mail" class="w-full bg-slate-100 border-none rounded-2xl px-6 py-4 font-bold" required>
+                    <input type="password" id="login-pass" placeholder="Senha" class="w-full bg-slate-100 border-none rounded-2xl px-6 py-4 font-bold" required>
+                    <button type="submit" class="w-full bg-primary text-white font-black py-5 rounded-2xl shadow-lg hover:bg-primary-dim transition-all">Entrar</button>
+                </form>
+                <p id="auth-error" class="text-error text-sm font-bold text-center mt-4 hidden"></p>
+                <p class="text-center mt-6 text-sm font-bold text-slate-400">Novo por aqui? <button onclick="switchTab('register')" class="text-primary hover:underline">Crie sua conta</button></p>
+            </div>
+            <div id="register-tab" class="hidden">
+                <div class="text-center mb-6"><h3 class="text-3xl font-black">Nova Conta</h3></div>
+                <form onsubmit="handleRegister(event)" class="space-y-4 max-h-[60vh] overflow-y-auto px-2 no-scrollbar">
+                    <div><input type="text" id="reg-nome" placeholder="Nome Completo" class="w-full bg-slate-100 border-none rounded-2xl px-6 py-3 font-bold focus:ring-2 focus:ring-primary"><span id="err-reg-nome" class="text-error text-[10px] font-bold px-2 hidden"></span></div>
+                    <div><input type="email" id="reg-email" placeholder="E-mail" class="w-full bg-slate-100 border-none rounded-2xl px-6 py-3 font-bold focus:ring-2 focus:ring-primary"><span id="err-reg-email" class="text-error text-[10px] font-bold px-2 hidden"></span></div>
+                    <div><input type="password" id="reg-senha" placeholder="Senha" class="w-full bg-slate-100 border-none rounded-2xl px-6 py-3 font-bold focus:ring-2 focus:ring-primary"><span id="err-reg-senha" class="text-error text-[10px] font-bold px-2 hidden"></span></div>
+                    <div><input type="text" id="reg-cpf" placeholder="CPF" class="w-full bg-slate-100 border-none rounded-2xl px-6 py-3 font-bold focus:ring-2 focus:ring-primary" maxlength="14" oninput="maskCPF(this)"><span id="err-reg-cpf" class="text-error text-[10px] font-bold px-2 hidden"></span></div>
+                    <div><input type="text" id="reg-endereco" placeholder="Endereço" class="w-full bg-slate-100 border-none rounded-2xl px-6 py-3 font-bold focus:ring-2 focus:ring-primary"><span id="err-reg-endereco" class="text-error text-[10px] font-bold px-2 hidden"></span></div>
+                    <button type="submit" class="w-full bg-primary text-white font-black py-4 rounded-2xl shadow-lg mt-4">Registrar</button>
+                </form>
+                <p class="text-center mt-6 text-sm font-bold text-slate-400">Já tem conta? <button onclick="switchTab('login')" class="text-primary hover:underline">Fazer Login</button></p>
+            </div>
+        </div>
+    </div>
+
+    <div id="cart-modal" class="fixed inset-0 z-[100] hidden flex justify-end">
+        <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" onclick="toggleCartModal()"></div>
+        <div id="cart-drawer" class="bg-white w-full max-w-md h-full relative shadow-2xl translate-x-full transition-transform duration-300 flex flex-col">
+            <div class="p-8 border-b flex justify-between items-center"><h2 class="text-2xl font-black text-primary flex items-center gap-2"><span class="material-symbols-outlined">shopping_cart</span> Seu Carrinho</h2><button onclick="toggleCartModal()" class="w-10 h-10 bg-slate-50 rounded-full flex items-center justify-center text-slate-400 hover:text-error transition-colors"><span class="material-symbols-outlined">close</span></button></div>
+            <div id="cart-items" class="flex-1 overflow-y-auto p-8 space-y-6 bg-slate-50/50"></div>
+            <div class="p-8 bg-white border-t-4 border-slate-50"><div class="flex justify-between items-center mb-6"><span class="font-black text-slate-400 text-xs uppercase tracking-widest">Total</span><span id="cart-total" class="text-4xl font-black text-primary">R$ 0,00</span></div><button onclick="checkout()" id="btn-checkout" class="w-full bg-primary text-white font-black py-6 rounded-3xl shadow-xl hover:bg-primary-dim text-lg transition-all active:scale-95">Finalizar Compra</button></div>
+        </div>
+    </div>
+
+    <div id="team-modal" class="fixed inset-0 z-[100] hidden flex items-center justify-center px-4 bg-on-surface/40 backdrop-blur-sm transition-opacity">
+        <div class="absolute inset-0" onclick="toggleTeamModal()"></div>
+        <div class="bg-white max-w-4xl w-full p-10 relative z-10 rounded-[2.5rem] shadow-2xl border border-slate-200 max-h-[90vh] overflow-y-auto no-scrollbar">
+            <button onclick="toggleTeamModal()" class="absolute top-6 right-6 text-slate-400 p-2 bg-slate-50 rounded-full flex items-center justify-center"><span class="material-symbols-outlined">close</span></button>
+            <div class="text-center mb-10"><h2 class="text-4xl font-black text-on-surface">Os Criadores</h2><p class="text-slate-500 font-medium text-lg">As mentes brilhantes por trás da ToyToy.</p></div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="bg-slate-50 p-8 rounded-3xl text-center border border-slate-100 hover:shadow-lg transition-shadow">
+                    <img src="fotos.jpg" alt="Pedro" class="w-32 h-32 rounded-full object-cover object-top mx-auto mb-6 border-4 border-white shadow-md">
+                    <h3 class="text-xl font-black text-on-surface mb-1">Pedro Ferreira</h3>
+                    <p class="text-primary font-bold text-xs mb-4 uppercase tracking-widest">Desenvolvedor</p>
+                    <p class="text-slate-500 text-sm leading-relaxed">Responsável pelo desenvolvimento da API Back-end e integração das regras de negócio no servidor.</p>
+                </div>
+                <div class="bg-slate-50 p-8 rounded-3xl text-center border border-slate-100 hover:shadow-lg transition-shadow">
+                    <img src="edgle.jpg" alt="José" class="w-32 h-32 rounded-full object-cover object-top mx-auto mb-6 border-4 border-white shadow-md">
+                    <h3 class="text-xl font-black text-on-surface mb-1">José Edglê</h3>
+                    <p class="text-primary font-bold text-xs mb-4 uppercase tracking-widest">Desenvolvedor</p>
+                    <p class="text-slate-500 text-sm leading-relaxed">Atuou na modelagem de dados, arquitetura do sistema e implementação de segurança e persistência.</p>
+                </div>
+                <div class="bg-slate-50 p-8 rounded-3xl text-center border border-slate-100 hover:shadow-lg transition-shadow">
+                    <img src="davi.jpg" alt="Davi" class="w-32 h-32 rounded-full object-cover object-top mx-auto mb-6 border-4 border-white shadow-md">
+                    <h3 class="text-xl font-black text-on-surface mb-1">Davi Publio</h3>
+                    <p class="text-primary font-bold text-xs uppercase tracking-widest">Desenvolvedor</p>
+                    <p class="text-slate-500 text-sm leading-relaxed">Liderou o desenvolvimento do Front-end e UI/UX, criando a interface interativa e visual do catálogo.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast-container" class="fixed bottom-5 right-5 z-[200] flex flex-col gap-3 pointer-events-none"></div>
+
+    <script>
+        const API_BASE = 'http://localhost:8080/api/brinquedos';
+        const API_USER = 'http://localhost:8080/api/usuarios';
+        let currentToy = null;
+        let globalAllProducts = [];
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const params = new URLSearchParams(window.location.search);
+            const id = params.get('id');
+            loadAllProductsForSearch();
+            if (id) loadToyDetails(id); else window.location.href = 'index.html';
+            checkAuth();
+            updateCartBadge();
+            setupSearch();
+        });
+
+        async function loadAllProductsForSearch() {
+            try { const res = await fetch(API_BASE); globalAllProducts = await res.json(); } catch(e) { console.error(e); }
+        }
+
+        async function loadToyDetails(id) {
+            try {
+                const res = await fetch(`${API_BASE}/${id}`);
+                if (!res.ok) throw new Error();
+                currentToy = await res.json();
+                renderDetails(currentToy);
+                loadSimilarProducts(currentToy.categoria, currentToy.id);
+            } catch (e) {
+                document.getElementById('toy-detail-container').innerHTML = `<div class="w-full text-center py-20 font-bold text-slate-400">Brinquedo não encontrado.</div>`;
+            }
+        }
+
+        function renderDetails(p) {
+            const container = document.getElementById('toy-detail-container');
+            const precoBase = p.preco || 0; const desconto = p.desconto || 0; const precoCalculado = precoBase * (1 - desconto / 100);
+            container.innerHTML = `
+                <div class="lg:w-1/2 bg-slate-50 flex items-center justify-center p-12 lg:p-20 relative">
+                    <img src="${p.caminhoImagem}" class="w-full h-full max-h-[500px] object-contain drop-shadow-2xl hover:scale-105 transition-transform duration-700" onerror="this.src='icon.png'">
+                    ${desconto > 0 ? `<span class="absolute top-10 left-10 bg-red-500 text-white font-black px-6 py-2 rounded-full shadow-lg">OFERTA -${desconto}%</span>` : ''}
+                </div>
+                <div class="lg:w-1/2 p-12 lg:p-20 flex flex-col">
+                    <div class="mb-8"><span class="text-primary font-black uppercase tracking-widest text-xs">${p.categoria}</span><h1 class="text-5xl font-black text-on-surface mt-2">${p.nome}</h1></div>
+                    <p class="text-slate-500 text-lg leading-relaxed mb-10 flex-1">${p.descricao || 'Diversão garantida com qualidade ToyToy.'}</p>
+                    <div class="space-y-8 mt-auto">
+                        <div class="flex items-center gap-6">
+                            <div class="flex flex-col items-start">${desconto > 0 ? `<span class="text-lg text-slate-300 line-through font-bold">R$ ${precoBase.toFixed(2)}</span>` : ''}<div class="flex items-baseline gap-2 ${desconto > 0 ? 'text-red-600' : 'text-primary'} whitespace-nowrap"><span class="text-2xl font-black">R$</span><span class="text-5xl font-black">${precoCalculado.toFixed(2)}</span></div></div>
+                            <div class="h-16 w-px bg-slate-100 mx-2"></div><div class="flex flex-col"><span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Estoque</span><span class="text-xl font-bold text-on-surface">${p.quantidade > 0 ? p.quantidade + ' unidades' : 'Esgotado'}</span></div>
+                        </div>
+                        <button onclick="addToCartFromDetail()" ${p.quantidade <= 0 ? 'disabled' : ''} class="w-full bg-primary text-white font-black py-6 rounded-3xl shadow-xl hover:bg-primary-dim transition-all text-xl active:scale-95 disabled:bg-slate-300 flex items-center justify-center gap-3"><span class="material-symbols-outlined text-2xl font-black">add_shopping_cart</span> Adicionar ao Carrinho</button>
+                    </div>
+                </div>`;
+        }
+
+        async function loadSimilarProducts(category, currentId) {
+            try {
+                const res = await fetch(`${API_BASE}/filtro?categoria=${encodeURIComponent(category)}`);
+                const products = await res.json();
+                const container = document.getElementById('similar-products-container');
+                const similar = products.filter(p => p.id !== currentId).slice(0, 4);
+                if (similar.length === 0) { container.innerHTML = `<p class="col-span-full text-slate-400 font-bold text-center">Busque outras aventuras no nosso catálogo!</p>`; return; }
+                container.innerHTML = similar.map(p => {
+                    const precoBase = p.preco || 0; const desconto = p.desconto || 0; const pf = precoBase * (1 - desconto / 100);
+                    return `
+                    <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-100 hover:shadow-xl transition-all cursor-pointer group flex flex-col" onclick="window.location.href='detalhes.html?id=${p.id}'">
+                        <div class="aspect-square bg-slate-50 rounded-2xl mb-4 overflow-hidden p-4 relative">
+                            <img src="${p.caminhoImagem}" class="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500">
+                            ${desconto > 0 ? `<span class="absolute top-3 left-3 bg-red-500 text-white text-[10px] font-black px-3 py-1 rounded-full shadow-sm">-${desconto}%</span>` : ''}
+                        </div>
+                        <h4 class="font-black text-on-surface line-clamp-1 mb-2 text-sm">${p.nome}</h4>
+                        <div class="mt-auto flex justify-between items-end">
+                            <div class="flex flex-col">
+                                ${desconto > 0 ? `<span class="text-[11px] text-slate-300 line-through font-bold">R$ ${precoBase.toFixed(2)}</span>` : ''}
+                                <p class="text-xl font-black ${desconto > 0 ? 'text-red-600' : 'text-primary'}">R$ ${pf.toFixed(2)}</p>
+                            </div>
+                            <span class="material-symbols-outlined text-slate-300 group-hover:text-primary transition-colors">arrow_forward</span>
+                        </div>
+                    </div>`;
+                }).join('');
+            } catch (e) { console.error(e); }
+        }
+
+        function checkAuth() {
+            const auth = localStorage.getItem('toy_auth'), data = JSON.parse(localStorage.getItem('toy_user') || '{}');
+            if (auth && data.login) {
+                document.getElementById('btn-entrar').classList.add('hidden');
+                document.getElementById('user-menu').classList.replace('hidden', 'flex');
+                document.getElementById('user-name-display').textContent = `Olá, ${data.nome.split(' ')[0]}`;
+                const isAdmin = data.perfil === 'ROLE_ADMIN' || data.perfil === 'ADMIN';
+                if (isAdmin) { document.getElementById('admin-link').classList.remove('hidden'); document.getElementById('profile-link').classList.remove('hidden'); }
+                else { document.getElementById('admin-link').classList.add('hidden'); document.getElementById('profile-link').classList.remove('hidden'); }
+            }
+        }
+
+        async function handleLogin(e) {
+            e.preventDefault(); const errorEl = document.getElementById('auth-error'); errorEl.classList.add('hidden');
+            const creds = btoa(`${document.getElementById('login-user').value}:${document.getElementById('login-pass').value}`);
+            try {
+                const res = await fetch(`${API_USER}/login`, { method: 'POST', headers: { 'Authorization': `Basic ${creds}` } });
+                if (res.ok) { localStorage.setItem('toy_auth', creds); localStorage.setItem('toy_user', JSON.stringify(await res.json())); window.location.reload(); }
+                else { errorEl.textContent = "Dados incorretos!"; errorEl.classList.remove('hidden'); }
+            } catch (e) { errorEl.textContent = "Erro de conexão."; errorEl.classList.remove('hidden'); }
+        }
+
+        async function handleRegister(e) {
+            e.preventDefault(); document.querySelectorAll('#register-tab span').forEach(s => s.classList.add('hidden'));
+            const nome = document.getElementById('reg-nome').value, email = document.getElementById('reg-email').value, senha = document.getElementById('reg-senha').value, cpf = document.getElementById('reg-cpf').value, end = document.getElementById('reg-endereco').value;
+            try {
+                const res = await fetch(`${API_USER}/registrar`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ login: email, nome, email, senha, cpf, endereco: end, perfil: 'ROLE_USER' }) });
+                if (res.ok) { showToast("Conta criada!"); switchTab('login'); }
+                else { const d = await res.json(); if(res.status === 400) Object.keys(d).forEach(f => { const s = document.getElementById(`err-reg-${f}`); if(s) { s.textContent = d[f]; s.classList.remove('hidden'); } }); }
+            } catch (e) { showToast("Erro ao registrar.", "error"); }
+        }
+
+        function addToCartFromDetail() {
+            if(!currentToy) return; const auth = localStorage.getItem('toy_auth'); if(!auth) { showToast("Faça login!", "error"); toggleLoginModal(); return; }
+            let cart = JSON.parse(localStorage.getItem('toy_cart') || '[]'); const idx = cart.findIndex(it => it.id === currentToy.id);
+            const pf = currentToy.preco * (1 - (currentToy.desconto || 0) / 100);
+            if (idx > -1) cart[idx].qtd += 1; else cart.push({ id: currentToy.id, nome: currentToy.nome, preco: pf, imagem: currentToy.caminhoImagem, qtd: 1 });
+            localStorage.setItem('toy_cart', JSON.stringify(cart)); updateCartBadge(); showToast("Adicionado!");
+        }
+
+        function setupSearch() {
+            const input = document.getElementById('search-input'), box = document.getElementById('search-suggestions');
+            
+            const buscarUnique = (t) => {
+                const filtered = globalAllProducts.filter(p => 
+                    (p.nome && p.nome.toLowerCase().includes(t)) || 
+                    (p.categoria && p.categoria.toLowerCase().includes(t))
+                );
+                const unique = []; const names = new Set();
+                for (const p of filtered) { if (!names.has(p.nome)) { names.add(p.nome); unique.push(p); } }
+                return unique;
+            };
+
+            input.addEventListener('input', (e) => {
+                const t = e.target.value.toLowerCase().trim(); if(t.length < 2) { box.classList.add('hidden'); return; }
+                const res = buscarUnique(t).slice(0, 5);
+                box.innerHTML = res.length === 0 ? '<div class="p-4 text-center text-slate-400">Nenhum brinquedo encontrado</div>' : res.map(p => `
+                    <div onclick="window.location.href='detalhes.html?id=${p.id}'" class="p-3 hover:bg-slate-50 cursor-pointer flex items-center gap-3 border-b border-slate-50">
+                        <img src="${p.caminhoImagem}" class="w-10 h-10 object-contain rounded-lg bg-white p-1 border border-slate-100">
+                        <div>
+                            <span class="font-black text-sm text-primary block line-clamp-1">${p.nome}</span>
+                            <span class="text-[9px] text-slate-400 uppercase font-black">${p.categoria}</span>
+                        </div>
+                    </div>`).join('');
+                box.classList.remove('hidden');
+            });
+            
+            // Redireciona para a home com o filtro se pressionar Enter
+            input.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    const term = input.value.trim();
+                    if(term) window.location.href = `index.html?busca=${encodeURIComponent(term)}`;
+                }
+            });
+
+            document.addEventListener('click', (e) => { if (!e.target.closest('#search-suggestions') && !e.target.closest('#search-input')) box.classList.add('hidden'); });
+        }
+
+        function toggleLoginModal() { document.getElementById('login-modal').classList.toggle('hidden'); }
+        function toggleCartModal() { const m = document.getElementById('cart-modal'), d = document.getElementById('cart-drawer'); m.classList.toggle('hidden'); if(!m.classList.contains('hidden')) { renderCartItems(); setTimeout(() => d.classList.remove('translate-x-full'), 10); } else d.classList.add('translate-x-full'); }
+        function switchTab(aba) { document.getElementById('login-tab').classList.toggle('hidden', aba === 'register'); document.getElementById('register-tab').classList.toggle('hidden', aba === 'login'); }
+        function maskCPF(i) { let v = i.value.replace(/\D/g, '').slice(0, 11); if (v.length > 9) v = v.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4"); else if (v.length > 6) v = v.replace(/(\d{3})(\d{3})(\d{1,3})/, "$1.$2.$3"); else if (v.length > 3) v = v.replace(/(\d{3})(\d{1,3})/, "$1.$2"); i.value = v; }
+        function updateCartBadge() { const c = (JSON.parse(localStorage.getItem('toy_cart') || '[]')).reduce((a, i) => a + i.qtd, 0); const b = document.getElementById('cart-count'); b.textContent = c; c > 0 ? b.classList.remove('hidden') : b.classList.add('hidden'); }
+        function renderCartItems() {
+            const cart = JSON.parse(localStorage.getItem('toy_cart') || '[]'), container = document.getElementById('cart-items'), totalEl = document.getElementById('cart-total');
+            if(cart.length === 0) { container.innerHTML = `<div class="flex flex-col items-center justify-center h-full text-slate-400 py-10"><p class="font-bold">Carrinho vazio.</p></div>`; totalEl.textContent = 'R$ 0,00'; return; }
+            let total = 0; container.innerHTML = cart.map((item, index) => { total += item.preco * item.qtd; return `<div class="flex items-center gap-4 bg-white p-4 rounded-3xl border border-slate-100"><img src="${item.imagem}" class="w-16 h-16 object-contain"> <div class="flex-1"><h4 class="font-bold text-xs">${item.nome}</h4><p class="text-primary font-black">R$ ${item.preco.toFixed(2)}</p><div class="flex justify-between items-center"><span class="text-[10px] bg-slate-100 px-2 py-1 rounded">Qtd: ${item.qtd}</span><button onclick="removeCartItem(${index})" class="text-error text-[10px] font-black">Remover</button></div></div></div>`; }).join('');
+            totalEl.textContent = 'R$ ' + total.toFixed(2);
+        }
+        function removeCartItem(idx) { let c = JSON.parse(localStorage.getItem('toy_cart') || '[]'); c.splice(idx, 1); localStorage.setItem('toy_cart', JSON.stringify(c)); renderCartItems(); updateCartBadge(); }
+        async function checkout() { const auth = localStorage.getItem('toy_auth'); if(!auth) return; const cart = JSON.parse(localStorage.getItem('toy_cart') || '[]'); for(let it of cart) { for(let i=0; i<it.qtd; i++) { await fetch(`${API_BASE}/encomendar/${it.id}`, { method: 'POST', headers: { 'Authorization': `Basic ${auth}` } }); } } localStorage.setItem('toy_cart', '[]'); showToast("Pedido realizado com sucesso!"); setTimeout(() => window.location.reload(), 1000); }
+        function logout() { localStorage.clear(); window.location.href = 'index.html'; }
+        function toggleTeamModal() { document.getElementById('team-modal').classList.toggle('hidden'); }
+        function showToast(m, t = 'success') { const c = document.getElementById('toast-container'); const toast = document.createElement('div'); toast.className = `${t === 'success' ? 'bg-primary' : 'bg-error'} text-white px-6 py-4 rounded-2xl shadow-2xl transition-all duration-300`; toast.innerHTML = `<span class="font-bold text-sm">${m}</span>`; c.appendChild(toast); setTimeout(() => toast.remove(), 3000); }
+    </script>
+</body>
+</html>

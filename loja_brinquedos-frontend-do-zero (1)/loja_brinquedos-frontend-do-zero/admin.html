@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <link rel="icon" type="image/png" href="icon.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel Admin - ToyToy</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: { extend: { colors: { 'toy-bg': '#F8FAFC', 'toy-primary': '#1E293B', 'toy-accent': '#E11D48' } } }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap');
+        body { font-family: 'Nunito', sans-serif; }
+        .clay-card { background: #ffffff; border-radius: 24px; box-shadow: 8px 8px 16px #e2e8f0, -8px -8px 16px #ffffff; border: 2px solid #cbd5e1; }
+        input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+    </style>
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="bg-toy-bg min-h-screen p-4 md:p-8">
+
+    <div class="max-w-7xl mx-auto">
+        <header class="flex flex-col md:flex-row justify-between items-center gap-6 mb-8">
+            <div class="flex flex-col sm:flex-row items-center gap-4">
+                <a href="index.html" class="flex items-center gap-2 px-5 h-12 bg-white rounded-2xl text-toy-primary shadow-sm border-2 border-slate-300 hover:scale-105 transition-all font-black decoration-none">
+                    <i data-lucide="external-link" class="w-5 h-5"></i> Loja
+                </a>
+                <h1 class="text-4xl font-black text-toy-primary uppercase tracking-tighter">Painel Admin</h1>
+            </div>
+            <button onclick="openModal()" class="bg-pink-500 hover:bg-pink-600 text-white rounded-2xl flex items-center gap-2 px-8 py-4 text-lg shadow-lg border-2 border-pink-700 font-black transition-all active:scale-95">
+                <i data-lucide="plus-circle" class="w-6 h-6"></i> Novo Brinquedo
+            </button>
+        </header>
+
+        <div class="flex gap-4 mb-8 border-b-2 border-slate-200">
+            <button onclick="switchView('produtos')" id="btn-view-produtos" class="px-6 py-3 font-black text-toy-primary border-b-4 border-toy-primary uppercase text-xs tracking-widest transition-all">Produtos</button>
+            <button onclick="switchView('encomendas')" id="btn-view-encomendas" class="px-6 py-3 font-black text-slate-400 hover:text-toy-primary transition-all uppercase text-xs tracking-widest">Encomendas</button>
+        </div>
+
+        <div id="view-produtos">
+            <div class="flex flex-col md:flex-row gap-4 mb-10">
+                <div class="relative flex-1">
+                    <input type="text" id="admin-search" oninput="applyFilters()" placeholder="Buscar nome ou categoria..." class="w-full clay-card px-4 py-4 pl-12 outline-none focus:ring-4 focus:ring-toy-primary/10 font-bold text-toy-primary transition-all">
+                    <i data-lucide="search" class="w-6 h-6 absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                </div>
+                <div class="flex gap-2">
+                    <select id="admin-category-filter" onchange="applyFilters()" class="w-full md:w-64 clay-card px-4 py-4 outline-none font-bold text-toy-primary cursor-pointer transition-all"></select>
+                    <button onclick="abrirModalCategoria()" title="Nova Categoria Permanente" class="p-4 bg-blue-600 text-white rounded-2xl shadow-lg border-2 border-blue-800 transition-all active:scale-95 flex items-center justify-center">
+                        <i data-lucide="folder-plus" class="w-6 h-6"></i>
+                    </button>
+                    <button onclick="confirmDeleteCategory()" title="Excluir Categoria Permanente" class="p-4 bg-rose-500 text-white rounded-2xl shadow-lg border-2 border-rose-800 transition-all active:scale-95 flex items-center justify-center">
+                        <i data-lucide="trash-2" class="w-6 h-6"></i>
+                    </button>
+                </div>
+            </div>
+            <div id="admin-product-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+        </div>
+
+        <div id="view-encomendas" class="hidden">
+            <div class="clay-card bg-white overflow-hidden shadow-sm">
+                <table class="w-full text-left border-collapse">
+                    <thead><tr class="bg-slate-50 border-b"><th class="p-6 font-black text-xs text-slate-400 uppercase tracking-widest">Pedido</th><th class="p-6 font-black text-xs text-slate-400 uppercase tracking-widest">Produto</th><th class="p-6 font-black text-xs text-slate-400 uppercase tracking-widest">Valor</th><th class="p-6 font-black text-xs text-slate-400 uppercase tracking-widest">Status</th><th class="p-6 font-black text-xs text-slate-400 uppercase tracking-widest">Ação</th></tr></thead>
+                    <tbody id="admin-encomendas-list"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Brinquedo -->
+    <div id="product-modal" class="fixed inset-0 z-[200] hidden flex items-center justify-center px-4 bg-slate-900/40 backdrop-blur-sm">
+        <div class="absolute inset-0" onclick="closeModal()"></div>
+        <div class="clay-card max-w-2xl w-full p-8 relative bg-white z-10 overflow-y-auto max-h-[90vh]">
+            <button onclick="closeModal()" class="absolute top-4 right-4 text-slate-400 hover:text-toy-accent transition-colors"><i data-lucide="x" class="w-6 h-6"></i></button>
+            <h2 id="modal-title" class="text-3xl font-black mb-8 text-toy-primary uppercase tracking-tighter">Gerenciar Brinquedo</h2>
+            <form id="product-form" onsubmit="handleSave(event)" class="grid grid-cols-1 md:grid-cols-2 gap-6" novalidate>
+                <input type="hidden" id="prod-id">
+                <div class="md:col-span-2"><label class="block text-xs font-black mb-2 uppercase text-slate-400 tracking-widest">Nome do Produto</label><input type="text" id="prod-nome" class="w-full bg-toy-bg border-2 border-slate-200 rounded-xl px-4 py-3 font-bold outline-none focus:ring-2 focus:ring-toy-primary transition-all"><span id="err-prod-nome" class="text-rose-500 text-[10px] font-black hidden"></span></div>
+                <div class="md:col-span-2"><label class="block text-xs font-black mb-2 uppercase text-slate-400 tracking-widest">Categoria</label><select id="prod-categoria" class="w-full bg-toy-bg border-2 border-slate-200 rounded-xl px-4 py-3 font-bold outline-none"></select></div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:col-span-2">
+                    <div><label class="block text-xs font-black mb-2 uppercase text-slate-400 tracking-widest">Preço (R$)</label><input type="number" id="prod-preco" step="0.01" class="w-full bg-toy-bg border-2 border-slate-200 rounded-xl px-4 py-3 font-bold outline-none focus:ring-2 focus:ring-toy-primary transition-all"><span id="err-prod-preco" class="text-rose-500 text-[10px] font-black hidden"></span></div>
+                    <div><label class="block text-xs font-black mb-2 uppercase text-slate-400 tracking-widest">Estoque</label><input type="number" id="prod-quantidade" class="w-full bg-toy-bg border-2 border-slate-200 rounded-xl px-4 py-3 font-bold outline-none focus:ring-2 focus:ring-toy-primary transition-all"><span id="err-prod-quantidade" class="text-rose-500 text-[10px] font-black hidden"></span></div>
+                    <div><label class="block text-xs font-black mb-2 uppercase text-slate-400 tracking-widest">Desconto (%)</label><input type="number" id="prod-desconto" class="w-full bg-toy-bg border-2 border-slate-200 rounded-xl px-4 py-3 font-bold outline-none focus:ring-2 focus:ring-toy-primary transition-all"><span id="err-prod-desconto" class="text-rose-500 text-[10px] font-black hidden"></span></div>
+                </div>
+
+                <div class="md:col-span-2">
+                    <label class="block text-xs font-black mb-2 uppercase text-slate-400 tracking-widest">Imagem do Produto</label>
+                    <div class="flex gap-3"><input type="url" id="prod-imagem" placeholder="URL ou Upload..." class="flex-1 bg-toy-bg border-2 border-slate-200 rounded-xl px-4 py-3 font-bold outline-none focus:ring-2 focus:ring-toy-primary transition-all"><label for="upload-img" class="bg-toy-primary text-white px-4 py-3 rounded-xl cursor-pointer font-black text-xs flex items-center gap-2 hover:bg-toy-primary/90 transition-all"><i data-lucide="upload" class="w-4 h-4"></i></label><input type="file" id="upload-img" accept="image/*" class="hidden" onchange="handleImageUpload(this)"></div>
+                    <span id="err-prod-caminhoImagem" class="text-rose-500 text-[10px] font-black px-2 hidden mt-1"></span>
+                    <div id="img-preview-container" class="mt-4 hidden"><p class="text-[9px] font-black text-slate-400 mb-2 uppercase tracking-widest">Prévia:</p><img id="img-preview" class="w-24 h-24 object-contain rounded-xl border-2 border-slate-100 p-1 bg-white shadow-sm"></div>
+                </div>
+                <div class="md:col-span-2"><label class="block text-xs font-black mb-2 uppercase text-slate-400 tracking-widest">Descrição</label><textarea id="prod-descricao" rows="2" class="w-full bg-toy-bg border-2 border-slate-200 rounded-xl px-4 py-3 font-bold outline-none focus:ring-2 focus:ring-toy-primary transition-all"></textarea></div>
+                <button type="submit" id="btn-save-prod" class="md:col-span-2 bg-pink-500 text-white rounded-2xl py-4 text-xl font-black shadow-lg border-2 border-pink-700 transition-all hover:bg-pink-600 active:scale-95">Salvar Alterações</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Categoria -->
+    <div id="category-modal" class="fixed inset-0 z-[250] hidden flex items-center justify-center px-4 bg-slate-900/40 backdrop-blur-sm">
+        <div class="absolute inset-0" onclick="fecharModalCategoria()"></div>
+        <div class="clay-card max-w-sm w-full p-8 relative bg-white z-10 text-center">
+            <div class="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-4 border-2 border-blue-100"><i data-lucide="folder-plus" class="w-8 h-8 text-blue-600"></i></div>
+            <h2 class="text-2xl font-black mb-2 text-toy-primary uppercase tracking-tighter">Nova Categoria</h2>
+            <p class="text-xs font-bold text-slate-400 mb-6 uppercase tracking-widest">Criar no banco permanente</p>
+            <input type="text" id="new-category-input" placeholder="Ex: LEGO" class="w-full bg-toy-bg border-2 border-slate-200 rounded-xl px-4 py-4 mb-6 text-center font-black outline-none focus:ring-2 focus:ring-blue-500 transition-all">
+            <div class="flex gap-4">
+                <button onclick="fecharModalCategoria()" class="flex-1 font-bold text-slate-400 hover:text-toy-primary transition-colors cursor-pointer">Cancelar</button>
+                <button onclick="salvarNovaCategoria()" class="flex-1 bg-blue-600 text-white rounded-xl py-3 font-black shadow-lg hover:bg-blue-700 transition-all active:scale-95">Criar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Confirmação Customizado (Substitui confirm do navegador) -->
+    <div id="confirm-modal" class="fixed inset-0 z-[300] hidden flex items-center justify-center px-4 bg-slate-900/60 backdrop-blur-md">
+        <div class="absolute inset-0" onclick="fecharConfirmModal()"></div>
+        <div class="clay-card max-w-sm w-full p-8 relative bg-white z-10 text-center animate-in zoom-in-95 duration-200">
+            <div class="w-20 h-20 bg-rose-50 rounded-full flex items-center justify-center mx-auto mb-6 border-2 border-rose-200">
+                <i data-lucide="alert-triangle" class="w-10 h-10 text-rose-500"></i>
+            </div>
+            <h2 class="text-2xl font-black mb-4 text-toy-primary uppercase tracking-tighter">Confirmar Ação?</h2>
+            <p id="confirm-modal-msg" class="text-sm font-bold text-slate-500 mb-8 leading-relaxed"></p>
+            <div class="flex gap-4">
+                <button onclick="fecharConfirmModal()" class="flex-1 py-3 font-black text-slate-400 hover:text-toy-primary transition-colors cursor-pointer">Cancelar</button>
+                <button id="confirm-modal-btn" class="flex-1 bg-rose-500 text-white rounded-xl py-3 font-black shadow-lg hover:bg-rose-600 active:scale-95 transition-all">Confirmar</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast-container" class="fixed bottom-6 left-6 z-[300] flex flex-col gap-3 pointer-events-none"></div>
+
+    <script>
+        const API_BASE = 'http://localhost:8080/api/brinquedos';
+        const API_CAT = 'http://localhost:8080/api/categorias';
+        const auth = localStorage.getItem('toy_auth');
+        let allAdminProducts = [], categoriasSistema = [];
+
+        document.addEventListener('DOMContentLoaded', () => { loadAdminProducts(); loadCategorias(); lucide.createIcons(); });
+
+        async function loadAdminProducts() {
+            try { const res = await fetch(API_BASE); allAdminProducts = await res.json(); applyFilters(); } catch (e) { console.error(e); }
+        }
+
+        async function loadCategorias() {
+            try {
+                const res = await fetch(API_CAT);
+                categoriasSistema = await res.json();
+                const selFiltro = document.getElementById('admin-category-filter');
+                const selModal = document.getElementById('prod-categoria');
+                selFiltro.innerHTML = '<option value="">Todas as Categorias</option>' + categoriasSistema.map(c => `<option value="${c}">${c}</option>`).join('');
+                selModal.innerHTML = categoriasSistema.map(c => `<option value="${c}">${c}</option>`).join('');
+            } catch (e) { console.error(e); }
+        }
+
+        function applyFilters() {
+            const t = document.getElementById('admin-search').value.toLowerCase();
+            const c = document.getElementById('admin-category-filter').value;
+            const filtered = allAdminProducts.filter(p => (p.nome.toLowerCase().includes(t) || p.categoria.toLowerCase().includes(t)) && (c === "" || p.categoria === c));
+            renderAdminList(filtered);
+        }
+
+        function renderAdminList(ps) {
+            const container = document.getElementById('admin-product-grid');
+            if(ps.length === 0) { container.innerHTML = `<div class="col-span-full py-10 text-center font-bold text-slate-400 uppercase tracking-widest opacity-50">Nenhum registro encontrado</div>`; return; }
+            container.innerHTML = ps.map(p => {
+                const pb = p.preco || 0, d = p.desconto || 0, pf = pb * (1 - d / 100);
+                return `
+                <div class="clay-card p-6 bg-white flex flex-col relative transition-all hover:shadow-2xl">
+                    <div class="absolute top-0 right-0 bg-toy-primary text-white text-[9px] font-black px-3 py-1 rounded-bl-xl opacity-30 uppercase tracking-tighter">ID: ${p.id}</div>
+                    <div class="flex gap-4 mb-4">
+                        <img src="${p.caminhoImagem}" class="w-16 h-16 bg-toy-bg rounded-2xl border p-1 object-contain shadow-inner" onerror="this.src='icon.png'">
+                        <div class="flex-1 min-w-0">
+                            <h3 class="font-black text-base truncate uppercase tracking-tight">${p.nome}</h3>
+                            <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">${p.categoria}</p>
+                            <div class="mt-auto">
+                                ${d > 0 ? `<span class="text-[9px] text-slate-300 line-through font-bold">R$ ${pb.toFixed(2)}</span>` : ''}
+                                <p class="${d > 0 ? 'text-rose-500' : 'text-toy-primary'} font-black text-lg leading-tight">R$ ${pf.toFixed(2)}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2 mt-auto pt-4 border-t border-slate-50">
+                        <button onclick="prepareEdit(${p.id})" class="py-2 bg-toy-bg border rounded-xl font-black text-[10px] hover:bg-toy-primary hover:text-white transition-all uppercase tracking-widest cursor-pointer">Editar</button>
+                        <button onclick="deleteProduct(${p.id}, '${p.nome.replace(/'/g, "\\'")}')" class="py-2 bg-rose-50 border border-rose-100 text-rose-500 font-black rounded-xl text-[10px] hover:bg-rose-500 hover:text-white transition-all uppercase tracking-widest cursor-pointer">Excluir</button>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        function clearProductErrors() {
+            document.querySelectorAll('#product-form span[id^="err-"]').forEach(s => s.classList.add('hidden'));
+            document.querySelectorAll('#product-form input, #product-form select').forEach(i => i.classList.remove('ring-2', 'ring-rose-500'));
+        }
+
+        function showProductFieldError(id, msg) {
+            const input = document.getElementById(`prod-${id}`);
+            const span = document.getElementById(`err-prod-${id}`);
+            if (input) input.classList.add('ring-2', 'ring-rose-500');
+            if (span) { span.textContent = msg; span.classList.remove('hidden'); }
+        }
+
+        async function handleSave(e) {
+            e.preventDefault(); clearProductErrors();
+            const btn = document.getElementById('btn-save-prod'), id = document.getElementById('prod-id').value;
+            const originalText = btn.innerHTML;
+            
+            const n = document.getElementById('prod-nome').value.trim(), c = document.getElementById('prod-categoria').value;
+            const p = parseFloat(document.getElementById('prod-preco').value), q = parseInt(document.getElementById('prod-quantidade').value);
+            const d = parseFloat(document.getElementById('prod-desconto').value || 0), img = document.getElementById('prod-imagem').value;
+            const dsc = document.getElementById('prod-descricao').value.trim();
+
+            let err = false;
+            if(!n) { showProductFieldError('nome', "O nome é obrigatório"); err = true; }
+            if(isNaN(p) || p <= 0) { showProductFieldError('preco', "O preço deve ser maior que zero"); err = true; }
+            if(isNaN(q) || q < 0) { showProductFieldError('quantidade', "Estoque inválido"); err = true; }
+            if(d < 0 || d > 100) { showProductFieldError('desconto', "Valor entre 0 e 100"); err = true; }
+            if(!img) { showProductFieldError('caminhoImagem', "A imagem é obrigatória"); err = true; }
+            if(err) return;
+
+            btn.disabled = true; btn.innerHTML = '<span class="material-symbols-outlined animate-spin">refresh</span> Processando...';
+            const data = { nome: n, categoria: c, preco: p, quantidade: q, desconto: d, caminhoImagem: img, descricao: dsc };
+            try {
+                const res = await fetch(id ? `${API_BASE}/${id}` : API_BASE, { method: id ? 'PUT' : 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Basic ${auth}` }, body: JSON.stringify(data) });
+                if(res.ok) { showToast(id ? "Dados atualizados!" : "Brinquedo cadastrado!"); closeModal(); loadAdminProducts(); }
+                else { const ed = await res.json(); showToast(ed.mensagem || "Erro ao salvar brinquedo.", "error"); }
+            } catch (e) { showToast("Falha na conexão com o servidor.", "error"); }
+            finally { btn.disabled = false; btn.innerHTML = originalText; }
+        }
+
+        function fecharConfirmModal() { document.getElementById('confirm-modal').classList.add('hidden'); }
+
+        // EXCLUSÃO DE BRINQUEDO (Via Modal Customizado)
+        function deleteProduct(id, nome) {
+            const modal = document.getElementById('confirm-modal'), msg = document.getElementById('confirm-modal-msg'), btn = document.getElementById('confirm-modal-btn');
+            msg.innerHTML = `Deseja excluir <strong>"${nome}"</strong>?<br><span class="text-[10px] text-rose-400 uppercase font-black">Isso removerá também os pedidos vinculados.</span>`;
+            modal.classList.remove('hidden');
+            btn.onclick = async () => {
+                btn.disabled = true;
+                try {
+                    const res = await fetch(`${API_BASE}/${id}`, { method: 'DELETE', headers: { 'Authorization': `Basic ${auth}` } });
+                    if(res.ok) { showToast("Item removido com sucesso!"); loadAdminProducts(); fecharConfirmModal(); }
+                } catch(e) { showToast("Erro ao excluir.", "error"); }
+                finally { btn.disabled = false; }
+            };
+        }
+
+        // EXCLUSÃO DE CATEGORIA (Via Modal Customizado)
+        function confirmDeleteCategory() {
+            const cat = document.getElementById('admin-category-filter').value;
+            if(!cat) { showToast("Selecione uma categoria!", "error"); return; }
+            const modal = document.getElementById('confirm-modal'), msg = document.getElementById('confirm-modal-msg'), btn = document.getElementById('confirm-modal-btn');
+            msg.innerHTML = `EXCLUIR CATEGORIA <strong>"${cat}"</strong>?<br><span class="text-[10px] text-rose-400 uppercase font-black tracking-widest">AVISO: TODOS OS ITENS DELA SERÃO APAGADOS!</span>`;
+            modal.classList.remove('hidden');
+            btn.onclick = async () => {
+                btn.disabled = true;
+                try {
+                    const res = await fetch(`${API_CAT}/${encodeURIComponent(cat)}`, { method: 'DELETE', headers: { 'Authorization': `Basic ${auth}` } });
+                    if(res.ok) { showToast("Categoria e itens removidos!"); loadAdminProducts(); loadCategorias(); fecharConfirmModal(); }
+                } catch(e) { showToast("Erro ao excluir categoria.", "error"); }
+                finally { btn.disabled = false; }
+            };
+        }
+
+        function abrirModalCategoria() { document.getElementById('new-category-input').value = ''; document.getElementById('category-modal').classList.remove('hidden'); }
+        function fecharModalCategoria() { document.getElementById('category-modal').classList.add('hidden'); }
+
+        async function salvarNovaCategoria() {
+            const val = document.getElementById('new-category-input').value.trim();
+            if(!val) return;
+            try {
+                const res = await fetch(API_CAT, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Basic ${auth}` }, body: JSON.stringify({ nome: val }) });
+                if(res.ok) { showToast("Categoria criada!"); fecharModalCategoria(); loadCategorias(); }
+            } catch (e) { showToast("Erro ao criar.", "error"); }
+        }
+
+        function handleImageUpload(i) {
+            const f = i.files[0]; if (f) {
+                const r = new FileReader(); r.onload = (e) => { document.getElementById('prod-imagem').value = e.target.result; document.getElementById('img-preview').src = e.target.result; document.getElementById('img-preview-container').classList.remove('hidden'); }; r.readAsDataURL(f);
+            }
+        }
+
+        function openModal() { document.getElementById('product-form').reset(); document.getElementById('prod-id').value = ''; document.getElementById('img-preview-container').classList.add('hidden'); document.getElementById('product-modal').classList.remove('hidden'); clearProductErrors(); }
+        function closeModal() { document.getElementById('product-modal').classList.add('hidden'); }
+        
+        function prepareEdit(id) {
+            const p = allAdminProducts.find(x => x.id === id); if(!p) return;
+            clearProductErrors();
+            document.getElementById('prod-id').value = p.id; document.getElementById('prod-nome').value = p.nome; document.getElementById('prod-categoria').value = p.categoria; document.getElementById('prod-preco').value = p.preco; document.getElementById('prod-quantidade').value = p.quantidade; document.getElementById('prod-desconto').value = p.desconto || 0; document.getElementById('prod-imagem').value = p.caminhoImagem; document.getElementById('prod-descricao').value = p.descricao || '';
+            if(p.caminhoImagem) { document.getElementById('img-preview').src = p.caminhoImagem; document.getElementById('img-preview-container').classList.remove('hidden'); }
+            document.getElementById('product-modal').classList.remove('hidden');
+        }
+
+        async function loadAdminOrders() {
+            try {
+                const res = await fetch(`${API_BASE}/encomendas/todas`, { headers: { 'Authorization': `Basic ${auth}` } });
+                const orders = await res.json();
+                const container = document.getElementById('admin-encomendas-list');
+                if(orders.length === 0) { container.innerHTML = `<tr><td colspan="5" class="p-10 text-center text-slate-400 font-bold uppercase tracking-widest opacity-50 text-xs">Sem pedidos registrados</td></tr>`; return; }
+                container.innerHTML = orders.map(o => {
+                    const statusColor = o.status === 'PROCESSANDO' ? 'text-amber-600' : 'text-emerald-600';
+                    const actionHtml = o.status === 'PROCESSANDO' 
+                        ? `<button onclick="updateStatus(${o.id}, 'ENVIADO')" class="px-5 py-2 bg-toy-primary text-white text-[10px] font-black rounded-xl uppercase tracking-widest hover:scale-105 transition-all">Enviar</button>`
+                        : `<span class="flex items-center gap-1 text-[10px] font-black text-emerald-600 uppercase tracking-widest">Concluído</span>`;
+                    
+                    return `
+                    <tr class="border-b border-slate-50 transition-colors hover:bg-slate-50/50">
+                        <td class="p-6 font-black text-slate-500 text-xs">#ORD-${o.id}</td>
+                        <td class="p-6 font-black text-toy-primary text-sm uppercase tracking-tighter">${o.nomeBrinquedo}</td>
+                        <td class="p-6 font-black text-toy-primary">R$ ${o.precoNaData.toFixed(2)}</td>
+                        <td class="p-6 text-[10px] font-black ${statusColor} uppercase tracking-widest">${o.status}</td>
+                        <td class="p-6">${actionHtml}</td>
+                    </tr>`;
+                }).join('');
+            } catch (e) { console.error(e); }
+        }
+
+        async function updateStatus(id, s) { await fetch(`${API_BASE}/encomendar/${id}/status?novoStatus=${s}`, { method: 'PATCH', headers: { 'Authorization': `Basic ${auth}` } }); loadAdminOrders(); }
+        function switchView(v) { const isProd = v === 'produtos'; document.getElementById('view-produtos').classList.toggle('hidden', !isProd); document.getElementById('view-encomendas').classList.toggle('hidden', isProd); document.getElementById('btn-view-produtos').className = isProd ? "px-6 py-3 font-black text-toy-primary border-b-4 border-toy-primary uppercase text-xs tracking-widest" : "px-6 py-3 font-black text-slate-400 uppercase text-xs tracking-widest"; document.getElementById('btn-view-encomendas').className = !isProd ? "px-6 py-3 font-black text-toy-primary border-b-4 border-toy-primary uppercase text-xs tracking-widest" : "px-6 py-3 font-black text-slate-400 uppercase text-xs tracking-widest"; if(!isProd) loadAdminOrders(); }
+        
+        function showToast(m, t = 'success') {
+            const c = document.getElementById('toast-container'); 
+            const toast = document.createElement('div');
+            toast.className = `px-6 py-4 rounded-2xl text-white font-bold shadow-xl transition-all ${t === 'success' ? 'bg-emerald-600' : 'bg-rose-600'} border-2 border-white pointer-events-auto flex items-center animate-in slide-in-from-right duration-300`;
+            toast.innerHTML = `<span class="text-xs uppercase tracking-widest">${m}</span>`;
+            c.appendChild(toast); 
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-x-10'); setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+    </script>
+</body>
+</html>

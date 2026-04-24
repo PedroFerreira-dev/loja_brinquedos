@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html class="light" lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>ToyToy - Divirta-se</title>
+    <link rel="icon" type="image/png" href="icon.png">
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Be+Vietnam+Pro:wght@300;400;500;600&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary": "#005da7",
+                        "primary-dim": "#005192",
+                        "secondary": "#1e57b6",
+                        "tertiary": "#7b5400",
+                        "surface": "#f6f6ff",
+                        "on-surface": "#1d2e51",
+                        "outline": "#66769e",
+                        "outline-variant": "#9cadd7",
+                        "error": "#b31b25",
+                        "surface-container-low": "#edf0ff",
+                        "surface-container-lowest": "#ffffff"
+                    }
+                },
+            },
+        }
+    </script>
+    <style>
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        body { font-family: 'Be Vietnam Pro', sans-serif; scroll-behavior: smooth; }
+        h1, h2, h3 { font-family: 'Plus Jakarta Sans', sans-serif; }
+        
+        input[type="number"]::-webkit-outer-spin-button,
+        input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none !important;
+            margin: 0 !important;
+        }
+        input[type="number"] { -moz-appearance: textfield !important; appearance: none !important; }
+
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .cursor-grab { cursor: grab; }
+        .cursor-grabbing { cursor: grabbing !important; }
+        
+        @keyframes gradientFlow { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+        .animate-bg-gradient { background-size: 200% 200%; animation: gradientFlow 5s ease infinite; }
+        .hero-glow { box-shadow: 0 0 50px -10px rgba(59, 130, 246, 0.5); }
+    </style>
+</head>
+
+<body class="bg-surface text-on-surface">
+    <!-- Cabeçalho Principal -->
+    <header class="fixed top-0 w-full z-50 rounded-b-[3rem] bg-white/70 backdrop-blur-xl shadow-lg">
+        <div class="flex justify-between items-center px-8 py-4 w-full max-w-7xl mx-auto">
+            <div class="flex items-center gap-8">
+                <a class="text-2xl font-black tracking-tight text-blue-700 flex items-center gap-2" href="index.html">
+                    <img src="icon.png" alt="ToyToy Logo" class="h-10 w-10 object-contain">
+                    ToyToy
+                </a>
+                <!-- Navegação -->
+                <nav class="hidden lg:flex items-center gap-4 text-sm font-semibold">
+                    <a class="text-slate-600 hover:text-blue-500 transition-all duration-300" href="#novidades">Novidades</a>
+                    <a class="text-slate-600 hover:text-blue-500 transition-all duration-300" href="#promocoes">Promoções</a>
+                    <a class="text-slate-600 hover:text-blue-500 transition-all duration-300" href="#dia-do-heroi">Dia do Herói</a>
+                    <a class="text-slate-600 hover:text-blue-500 transition-all duration-300" href="#catalogo">Catálogo</a>
+                    <a class="text-slate-600 hover:text-blue-500 transition-all duration-300" href="#equipe">Equipe</a>
+                </nav>
+            </div>
+            <!-- Área de Pesquisa e Perfil -->
+            <div class="flex items-center gap-2 flex-1 justify-end">
+                <div class="relative w-full max-w-[220px] group">
+                    <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-sm">search</span>
+                    <input class="w-full bg-surface-container-low border-none rounded-full pl-9 pr-4 py-2 focus:ring-2 focus:ring-primary text-xs" id="search-input" autocomplete="off" placeholder="Buscar..." type="text" />
+                    <div id="search-suggestions" class="absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl shadow-xl border border-surface-variant z-[100] hidden max-h-80 overflow-y-auto p-2"></div>
+                </div>
+                <div class="flex items-center gap-1">
+                    <!-- Botão de Acesso/Login -->
+                    <button class="p-2 text-slate-600 hover:bg-blue-50/50 rounded-full transition-transform active:scale-90" id="btn-entrar" onclick="toggleLoginModal()">
+                        <span class="material-symbols-outlined">person</span>
+                    </button>
+                    <!-- Menu do Usuário Logado -->
+                    <div class="hidden items-center gap-1" id="user-menu">
+                        <span id="user-name-display" class="hidden lg:inline text-[12px] font-bold text-on-surface mr-1"></span>
+                        <a href="perfil.html" id="profile-link" class="p-2 text-primary hover:bg-primary/10 rounded-full transition-transform active:scale-90" title="Meu Perfil">
+                            <span class="material-symbols-outlined">account_circle</span>
+                        </a>
+                        <a href="admin.html" id="admin-link" class="hidden p-2 text-pink-500 hover:bg-pink-50 rounded-full transition-transform active:scale-90" title="Painel Admin">
+                            <span class="material-symbols-outlined">admin_panel_settings</span>
+                        </a>
+                        <button onclick="performLogout()" class="p-2 text-error hover:bg-error/10 rounded-full transition-transform active:scale-90" title="Sair">
+                            <span class="material-symbols-outlined">logout</span>
+                        </button>
+                    </div>
+                    <!-- Carrinho -->
+                    <button class="relative p-2 text-slate-600 hover:bg-blue-50/50 rounded-full transition-transform active:scale-90 cursor-pointer" onclick="toggleCartModal()">
+                        <span class="material-symbols-outlined">shopping_cart</span>
+                        <span id="cart-count" class="absolute top-1 right-1 w-4 h-4 bg-tertiary text-[10px] flex items-center justify-center text-white rounded-full font-bold hidden">0</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="pt-28 space-y-20">
+        <!-- Banner Principal -->
+        <section class="max-w-7xl mx-auto px-8">
+            <div class="relative overflow-hidden rounded-xl bg-gradient-to-br from-primary to-blue-400 min-h-[500px] flex items-center">
+                <div class="relative z-10 w-full lg:w-1/2 p-12 lg:pl-20">
+                    <span class="inline-block px-4 py-1.5 rounded-full bg-yellow-400 text-yellow-900 text-xs font-bold uppercase mb-6 shadow-sm">Nova Coleção 2026</span>
+                    <h1 class="text-5xl lg:text-7xl font-extrabold text-white leading-tight mb-6 tracking-tight">Alegria <br /> Para Todas <br /> as Idades.</h1>
+                    <p class="text-white text-lg mb-10 opacity-90 max-w-md">Brinquedos desenhados para inspirar, educar e proporcionar aventuras sem fim.</p>
+                    <div class="flex flex-wrap gap-4">
+                        <a class="px-8 py-4 bg-white text-primary font-bold rounded-full shadow-lg hover:scale-105 transition-transform inline-block" href="#catalogo">Ver Catálogo</a>
+                    </div>
+                </div>
+                <div id="hero-wrapper" class="absolute right-0 top-0 h-full w-1/2 hidden lg:block cursor-pointer">
+                    <img id="hero-img" alt="Destaque" class="w-full h-full object-contain transition-opacity duration-500 p-12" src="" />
+                    <div class="absolute inset-0 bg-gradient-to-l from-transparent to-primary/10 pointer-events-none"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Seção de Promoções -->
+        <section class="max-w-7xl mx-auto px-8 scroll-mt-32" id="promocoes">
+            <h2 class="text-3xl font-black text-on-surface tracking-tight mb-10 text-primary">Itens em Promoção</h2>
+            <div class="relative group">
+                <!-- Seta Esquerda -->
+                <button onclick="document.getElementById('promo-container').scrollBy({left: -400, behavior: 'smooth'})" class="absolute left-0 top-1/2 -translate-y-1/2 z-10 hidden lg:flex items-center justify-center w-14 h-14 bg-white rounded-full shadow-2xl text-primary opacity-0 group-hover:opacity-100 transition-all -ml-7 border-2 border-primary/5 hover:bg-primary hover:text-white cursor-pointer">
+                    <span class="material-symbols-outlined font-black">chevron_left</span>
+                </button>
+                
+                <div id="promo-container" class="flex overflow-x-auto no-scrollbar gap-8 pb-6 snap-x snap-mandatory"></div>
+
+                <!-- Seta Direita -->
+                <button onclick="document.getElementById('promo-container').scrollBy({left: 400, behavior: 'smooth'})" class="absolute right-0 top-1/2 -translate-y-1/2 z-10 hidden lg:flex items-center justify-center w-14 h-14 bg-white rounded-full shadow-2xl text-primary opacity-0 group-hover:opacity-100 transition-all -mr-7 border-2 border-primary/5 hover:bg-primary hover:text-white cursor-pointer">
+                    <span class="material-symbols-outlined font-black">chevron_right</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- Seção de Novidades -->
+        <section class="max-w-7xl mx-auto px-8 scroll-mt-32" id="novidades">
+            <div class="flex items-center justify-between mb-10">
+                <h2 class="text-3xl font-black text-on-surface tracking-tight text-primary flex items-center gap-3">
+                    Confira as Novidades!
+                </h2>
+            </div>
+            <div id="news-container" class="grid grid-cols-1 md:grid-cols-3 gap-8"></div>
+        </section>
+
+        <!-- Seção Dia do Herói -->
+        <section class="max-w-7xl mx-auto px-8 scroll-mt-32" id="dia-do-heroi">
+            <div class="mb-10 text-center lg:text-left">
+                <h2 class="text-4xl font-black text-primary tracking-tight flex items-center justify-center lg:justify-start gap-3">
+                    Dia do Herói! <span class="material-symbols-outlined text-4xl text-blue-400">shield</span>
+                </h2>
+                <p class="text-slate-400 font-bold uppercase tracking-widest text-xs mt-2">As lendas da ToyToy em destaque</p>
+            </div>
+            <div id="hero-day-carousel" class="relative overflow-hidden rounded-[3rem] bg-gradient-to-r from-blue-600 to-indigo-900 min-h-[450px] flex flex-col lg:flex-row items-center p-8 lg:p-20 shadow-2xl group border-b-8 border-blue-800 hero-glow">
+            </div>
+        </section>
+
+        <!-- Filtros e Catálogo Completo -->
+        <section class="max-w-7xl mx-auto px-8 scroll-mt-32" id="catalogo">
+            <div class="flex flex-col lg:flex-row lg:items-center justify-between mb-10 gap-6">
+                <div class="relative w-full lg:w-[75%] flex items-center group">
+                    <button onclick="document.getElementById('category-filters').scrollBy({left: -300, behavior: 'smooth'})" class="absolute left-0 z-10 hidden lg:flex items-center justify-center w-12 h-12 bg-white rounded-full shadow-lg text-primary opacity-0 group-hover:opacity-100 transition-opacity -ml-6 cursor-pointer hover:bg-primary hover:text-white border-2 border-primary/10">
+                        <span class="material-symbols-outlined font-black">chevron_left</span>
+                    </button>
+                    <div id="category-filters" class="flex items-center gap-4 overflow-x-auto no-scrollbar pb-4 lg:pb-0 w-full px-4 cursor-grab select-none"></div>
+                    <button onclick="document.getElementById('category-filters').scrollBy({left: 300, behavior: 'smooth'})" class="absolute right-0 z-10 hidden lg:flex items-center justify-center w-12 h-12 bg-white rounded-full shadow-lg text-primary opacity-0 group-hover:opacity-100 transition-opacity -mr-6 cursor-pointer hover:bg-primary hover:text-white border-2 border-primary/10">
+                        <span class="material-symbols-outlined font-black">chevron_right</span>
+                    </button>
+                </div>
+                <div class="shrink-0 self-end lg:self-center">
+                    <select id="sort-select" onchange="sortCatalog()" class="bg-surface-container-low border-none rounded-2xl px-6 py-4 font-black text-sm text-on-surface cursor-pointer shadow-sm outline-none focus:ring-2 focus:ring-primary">
+                        <option value="">Ordenar por...</option>
+                        <option value="asc">Menor Preço</option>
+                        <option value="desc">Maior Preço</option>
+                    </select>
+                </div>
+            </div>
+            <div id="product-container" class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6"></div>
+        </section>
+    </main>
+
+    <!-- Rodapé -->
+    <footer class="rounded-t-[4rem] mt-20 bg-slate-50 border-t-8 border-white" id="equipe">
+        <div class="max-w-7xl mx-auto px-12 py-16 grid grid-cols-1 lg:grid-cols-4 gap-12">
+            <div>
+                <a class="text-3xl font-black text-primary mb-6 block" href="#">ToyToy</a>
+                <p class="text-slate-500 text-sm mb-8 leading-relaxed">Conectando diversão e desenvolvimento. O futuro do brincar começa aqui na ToyToy.</p>
+                <div class="flex gap-4">
+                    <a href="https://github.com/PedroFerreira-dev/loja_brinquedos" target="_blank" class="w-10 h-10 flex items-center justify-center rounded-full bg-slate-900 text-white hover:scale-110 transition-transform shadow-lg">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+                    </a>
+                </div>
+            </div>
+            <div class="col-span-3">
+                <div class="flex flex-col md:flex-row md:items-center justify-between mb-10 gap-4">
+                    <h3 class="text-xs uppercase tracking-[0.2em] text-primary font-black">Equipe de Desenvolvimento</h3>
+                    <button onclick="toggleTeamModal()" class="text-primary text-sm font-bold hover:underline flex items-center gap-1 transition-all active:scale-95">
+                        Conhecer a Equipe <span class="material-symbols-outlined text-[16px]">visibility</span>
+                    </button>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 flex items-center gap-4 hover:shadow-md transition-shadow">
+                        <img src="fotos.jpg" class="w-14 h-14 rounded-full object-cover object-top border-4 border-primary/10" onerror="this.src='https://via.placeholder.com/150'">
+                        <div><p class="font-black text-on-surface">Pedro Ferreira</p><p class="text-xs text-slate-400 font-bold">Desenvolvedor</p></div>
+                    </div>
+                    <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 flex items-center gap-4 hover:shadow-md transition-shadow">
+                        <img src="edgle.jpg" class="w-14 h-14 rounded-full object-cover object-top border-4 border-primary/10" onerror="this.src='https://via.placeholder.com/150'">
+                        <div><p class="font-black text-on-surface">José Edglê</p><p class="text-xs text-slate-400 font-bold">Desenvolvedor</p></div>
+                    </div>
+                    <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 flex items-center gap-4 hover:shadow-md transition-shadow">
+                        <img src="davi.jpg" class="w-14 h-14 rounded-full object-cover object-top border-4 border-primary/10" onerror="this.src='https://via.placeholder.com/150'">
+                        <div><p class="font-black text-on-surface">Davi Publio</p><p class="text-xs text-slate-400 font-bold">Desenvolvedor</p></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Modal de Autenticação -->
+    <div id="login-modal" class="fixed inset-0 z-[100] hidden flex items-center justify-center px-4 bg-on-surface/40 backdrop-blur-sm">
+        <div class="absolute inset-0" onclick="toggleLoginModal()"></div>
+        <div class="bg-white max-w-md w-full p-10 relative z-10 rounded-[2.5rem] shadow-2xl">
+            <button onclick="toggleLoginModal()" class="absolute top-6 right-6 text-slate-400 hover:text-error transition-colors p-2 bg-slate-50 rounded-full flex items-center justify-center"><span class="material-symbols-outlined">close</span></button>
+            <div id="login-tab">
+                <h3 class="text-3xl font-black text-center mb-8 text-on-surface">Bem-vindo!</h3>
+                <form onsubmit="handleLogin(event)" class="space-y-4">
+                    <input type="text" id="login-user" placeholder="E-mail" class="w-full bg-slate-100 border-none rounded-2xl px-6 py-4 outline-none focus:ring-4 focus:ring-primary/10 font-bold" required>
+                    <input type="password" id="login-pass" placeholder="Senha" class="w-full bg-slate-100 border-none rounded-2xl px-6 py-4 outline-none focus:ring-4 focus:ring-primary/10 font-bold" required>
+                    <button type="submit" class="w-full bg-primary text-white font-black py-5 rounded-2xl shadow-lg text-lg hover:bg-primary-dim transition-all active:scale-95">Entrar</button>
+                </form>
+                <p id="auth-error" class="text-error text-sm font-bold text-center mt-4 hidden"></p>
+                <p class="text-center mt-6 text-sm font-bold text-slate-400">Ainda não tem conta? <button type="button" onclick="switchTab('register')" class="text-primary hover:underline">Crie agora!</button></p>
+            </div>
+            <div id="register-tab" class="hidden">
+                <div class="text-center mb-6"><h3 class="text-3xl font-black text-on-surface">Nova Conta</h3></div>
+                <form onsubmit="handleRegister(event)" novalidate class="space-y-4 max-h-[60vh] overflow-y-auto px-2 no-scrollbar">
+                    <div>
+                        <input type="text" id="reg-nome" placeholder="Nome Completo" class="w-full bg-slate-100 border-none rounded-2xl px-6 py-3 outline-none font-bold focus:ring-2 focus:ring-primary">
+                        <span id="err-reg-nome" class="text-error text-[10px] font-bold px-2 hidden"></span>
+                    </div>
+                    <div>
+                        <input type="email" id="reg-email" placeholder="E-mail" class="w-full bg-slate-100 border-none rounded-2xl px-6 py-3 outline-none font-bold focus:ring-2 focus:ring-primary">
+                        <span id="err-reg-email" class="text-error text-[10px] font-bold px-2 hidden"></span>
+                    </div>
+                    <div>
+                        <input type="password" id="reg-senha" placeholder="Senha" class="w-full bg-slate-100 border-none rounded-2xl px-6 py-3 outline-none font-bold focus:ring-2 focus:ring-primary">
+                        <span id="err-reg-senha" class="text-error text-[10px] font-bold px-2 hidden"></span>
+                    </div>
+                    <div>
+                        <input type="text" id="reg-cpf" placeholder="CPF (000.000.000-00)" class="w-full bg-slate-100 border-none rounded-2xl px-6 py-3 outline-none font-bold focus:ring-2 focus:ring-primary" maxlength="14" oninput="maskCPF(this)">
+                        <span id="err-reg-cpf" class="text-error text-[10px] font-bold px-2 hidden"></span>
+                    </div>
+                    <div>
+                        <input type="text" id="reg-endereco" placeholder="Endereço Completo" class="w-full bg-slate-100 border-none rounded-2xl px-6 py-3 outline-none font-bold focus:ring-2 focus:ring-primary">
+                        <span id="err-reg-endereco" class="text-error text-[10px] font-bold px-2 hidden"></span>
+                    </div>
+                    <button type="submit" class="w-full bg-primary text-white font-black py-4 rounded-2xl shadow-lg text-lg mt-4 hover:bg-primary-dim transition-all">Registrar</button>
+                </form>
+                <p id="reg-error" class="text-error text-sm font-bold text-center mt-4 hidden"></p>
+                <p class="text-center mt-6 text-sm font-bold text-slate-400">Já é de casa? <button type="button" onclick="switchTab('login')" class="text-primary hover:underline">Fazer Login</button></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal do Carrinho -->
+    <div id="cart-modal" class="fixed inset-0 z-[100] hidden flex justify-end">
+        <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" onclick="toggleCartModal()"></div>
+        <div id="cart-drawer" class="bg-white w-full max-w-md h-full relative shadow-2xl translate-x-full transition-transform duration-300 flex flex-col">
+            <div class="p-8 border-b flex justify-between items-center bg-white">
+                <h2 class="text-2xl font-black text-primary flex items-center gap-2"><span class="material-symbols-outlined">shopping_cart</span> Seu Carrinho</h2>
+                <button onclick="toggleCartModal()" class="w-10 h-10 bg-slate-50 rounded-full flex items-center justify-center text-slate-400 hover:text-error transition-colors"><span class="material-symbols-outlined">close</span></button>
+            </div>
+            <div id="cart-items" class="flex-1 overflow-y-auto p-8 space-y-6 bg-slate-50/50"></div>
+            <div class="p-8 bg-white border-t-4 border-slate-50">
+                <div class="flex justify-between items-center mb-6"><span class="font-black text-slate-400 text-xs uppercase tracking-widest">Total</span><span id="cart-total" class="text-4xl font-black text-primary">R$ 0,00</span></div>
+                <button onclick="checkout()" id="btn-checkout" class="w-full bg-primary text-white font-black py-6 rounded-3xl shadow-xl hover:bg-primary-dim text-lg transition-all active:scale-95">Finalizar Compra</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Equipe -->
+    <div id="team-modal" class="fixed inset-0 z-[100] hidden flex items-center justify-center px-4 bg-on-surface/40 backdrop-blur-sm transition-opacity">
+        <div class="absolute inset-0" onclick="toggleTeamModal()"></div>
+        <div class="bg-surface-container-lowest max-w-4xl w-full p-10 relative z-10 rounded-[2.5rem] shadow-2xl border border-surface-variant max-h-[90vh] overflow-y-auto no-scrollbar animate-in zoom-in-95 duration-300">
+            <button onclick="toggleTeamModal()" class="absolute top-6 right-6 text-outline hover:text-error transition-colors p-2 bg-surface-container rounded-full flex items-center justify-center"><span class="material-symbols-outlined text-lg">close</span></button>
+            <div class="text-center mb-10"><h2 class="text-4xl font-black text-on-surface mb-2">Os Criadores</h2><p class="text-outline font-medium text-lg">As mentes brilhantes por trás da ToyToy.</p></div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="bg-surface-container-low p-8 rounded-3xl text-center border border-surface-variant hover:shadow-lg transition-shadow">
+                    <img src="fotos.jpg" alt="Pedro" class="w-32 h-32 rounded-full object-cover object-top mx-auto mb-6 border-4 border-white shadow-md" onerror="this.src='https://via.placeholder.com/150'">
+                    <h3 class="text-xl font-black text-on-surface mb-1">Pedro Ferreira</h3>
+                    <p class="text-primary font-bold text-xs mb-4 uppercase tracking-widest">Desenvolvedor</p>
+                    <p class="text-on-surface-variant text-sm leading-relaxed">Responsável pelo desenvolvimento da API Back-end e integração das regras de negócio no servidor.</p>
+                </div>
+                <div class="bg-surface-container-low p-8 rounded-3xl text-center border border-surface-variant hover:shadow-lg transition-shadow">
+                    <img src="edgle.jpg" alt="José" class="w-32 h-32 rounded-full object-cover object-top mx-auto mb-6 border-4 border-white shadow-md" onerror="this.src='https://via.placeholder.com/150'">
+                    <h3 class="text-xl font-black text-on-surface mb-1">José Edglê</h3>
+                    <p class="text-primary font-bold text-xs mb-4 uppercase tracking-widest">Desenvolvedor</p>
+                    <p class="text-on-surface-variant text-sm leading-relaxed">Atuou na modelagem de dados, arquitetura do sistema e implementação de segurança e persistência.</p>
+                </div>
+                <div class="bg-surface-container-low p-8 rounded-3xl text-center border border-surface-variant hover:shadow-lg transition-shadow">
+                    <img src="davi.jpg" alt="Davi" class="w-32 h-32 rounded-full object-cover object-top mx-auto mb-6 border-4 border-white shadow-md" onerror="this.src='https://via.placeholder.com/150'">
+                    <h3 class="text-xl font-black text-on-surface mb-1">Davi Publio</h3>
+                    <p class="text-primary font-bold text-xs mb-4 uppercase tracking-widest">Desenvolvedor</p>
+                    <p class="text-on-surface-variant text-sm leading-relaxed">Liderou o desenvolvimento do Front-end e UI/UX, criando a interface interativa e visual do catálogo.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast-container" class="fixed bottom-5 right-5 z-[200] flex flex-col gap-3 pointer-events-none"></div>
+
+    <script>
+        const API_BASE = 'http://localhost:8080/api/brinquedos';
+        const API_USER = 'http://localhost:8080/api/usuarios';
+        let globalAllProducts = [];
+
+        // Inicializa serviços e componentes ao carregar a página
+        document.addEventListener('DOMContentLoaded', () => {
+            const params = new URLSearchParams(window.location.search);
+            const buscaParam = params.get('busca');
+
+            loadAllData().then(() => {
+                if (buscaParam) {
+                    const input = document.getElementById('search-input');
+                    if(input) input.value = buscaParam;
+                    const res = globalAllProducts.filter(p => 
+                        (p.nome && p.nome.toLowerCase().includes(buscaParam.toLowerCase())) || 
+                        (p.categoria && p.categoria.toLowerCase().includes(buscaParam.toLowerCase()))
+                    );
+                    renderCatalogo(res);
+                    const catEl = document.getElementById('catalogo');
+                    if(catEl) catEl.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+            loadCategories();
+            setupSearch();
+            setupCategoryDrag();
+            checkAuth();
+            updateCartBadge();
+        });
+
+        // Gerencia a exibição de notificações flutuantes (Toasts)
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            if (!container) return;
+
+            const toast = document.createElement('div');
+            const bgColor = type === 'success' ? 'bg-primary' : 'bg-error';
+            const icon = type === 'success' ? 'check_circle' : 'error';
+
+            toast.className = `${bgColor} text-white px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-3 transform transition-all duration-300 translate-y-10 opacity-0 pointer-events-auto`;
+            toast.innerHTML = `<span class="material-symbols-outlined">${icon}</span><span class="font-bold text-sm">${message}</span>`;
+
+            container.appendChild(toast);
+            setTimeout(() => toast.classList.remove('translate-y-10', 'opacity-0'), 10);
+            setTimeout(() => {
+                toast.classList.add('translate-y-10', 'opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // Carrega dados globais e inicializa as seções da página
+        async function loadAllData() {
+            try {
+                const res = await fetch(API_BASE);
+                globalAllProducts = await res.json();
+                loadNovidades();
+                renderPromos(globalAllProducts.filter(p => p.desconto > 0));
+                renderCatalogo(globalAllProducts);
+                initFixedHero();
+                initHeroDayCarousel(globalAllProducts.filter(p => p.categoria && p.categoria.includes("Heróis")));
+            } catch (e) { console.error(e); }
+        }
+
+        // Busca os brinquedos recém-adicionados no backend
+        async function loadNovidades() {
+            try {
+                const res = await fetch(`${API_BASE}/novidades`);
+                const news = await res.json();
+                const container = document.getElementById('news-container');
+                container.innerHTML = news.map(p => {
+                    const precoBase = p.preco || 0;
+                    const desconto = p.desconto || 0;
+                    const precoCalculado = precoBase * (1 - desconto / 100);
+                    return `
+                    <div class="bg-white rounded-[2rem] p-6 shadow-sm hover:shadow-2xl transition-all cursor-pointer group flex flex-col border border-slate-100" onclick="window.location.href='detalhes.html?id=${p.id}'">
+                        <div class="aspect-video rounded-2xl bg-slate-50 mb-6 overflow-hidden relative">
+                            <img src="${p.caminhoImagem}" class="w-full h-full object-contain p-4 group-hover:scale-110 transition-transform duration-700">
+                            <span class="absolute top-4 right-4 bg-primary text-white text-[9px] font-black px-3 py-1 rounded-full shadow-lg">NOVIDADE</span>
+                        </div>
+                        <div class="space-y-1 mb-4">
+                            <span class="text-[10px] text-slate-400 font-black uppercase tracking-widest">${p.categoria}</span>
+                            <h4 class="font-black text-on-surface text-lg group-hover:text-primary transition-colors">${p.nome}</h4>
+                        </div>
+                        <div class="mt-auto flex justify-between items-end">
+                            <div class="flex flex-col">
+                                ${desconto > 0 ? `<span class="text-[11px] text-slate-300 line-through font-bold">R$ ${precoBase.toFixed(2)}</span>` : ''}
+                                <p class="text-3xl font-black ${desconto > 0 ? 'text-red-600' : 'text-primary'}">R$ ${precoCalculado.toFixed(2)}</p>
+                            </div>
+                            <button onclick="addToCart(event, ${p.id}, '${p.nome.replace(/'/g, "\\'")}', ${precoCalculado}, '${p.caminhoImagem}')" class="w-14 h-14 bg-primary text-white rounded-2xl flex items-center justify-center hover:scale-105 transition-all shadow-lg active:scale-95">
+                                <span class="material-symbols-outlined font-black">add_shopping_cart</span>
+                            </button>
+                        </div>
+                    </div>`;
+                }).join('');
+            } catch (e) { console.error(e); }
+        }
+
+        // Seleciona um item aleatório do catálogo para recomendação
+        function irParaBrinquedoAleatorio(event) {
+            if(event) event.stopPropagation(); 
+            if (globalAllProducts.length > 0) {
+                const item = globalAllProducts[Math.floor(Math.random() * globalAllProducts.length)];
+                window.location.href = `detalhes.html?id=${item.id}`;
+            }
+        }
+
+        function toggleTeamModal() { document.getElementById('team-modal').classList.toggle('hidden'); }
+
+        // Inicializa a rotação automática de itens no banner hero
+        function initFixedHero() {
+            const img = document.getElementById('hero-img');
+            const wrapper = document.getElementById('hero-wrapper');
+            const targets = ["Batman", "Tubarão", "Urso"];
+            const heroes = globalAllProducts.filter(p => targets.some(t => p.nome.includes(t)));
+            if (heroes.length > 0) {
+                let idx = 0;
+                const update = () => {
+                    const toy = heroes[idx];
+                    img.classList.add('opacity-0');
+                    setTimeout(() => {
+                        img.src = toy.caminhoImagem;
+                        wrapper.onclick = () => window.location.href = `detalhes.html?id=${toy.id}`;
+                        img.classList.remove('opacity-0');
+                    }, 500);
+                    idx = (idx + 1) % heroes.length;
+                };
+                update();
+                setInterval(update, 4000);
+            }
+        }
+
+        // Carrossel exclusivo para a categoria Heróis com tratamento de promoções
+        function initHeroDayCarousel(heroToys) {
+            const container = document.getElementById('hero-day-carousel');
+            if (heroToys.length === 0) return;
+            container.innerHTML = '<div id="hero-day-inner" class="w-full flex flex-col lg:flex-row items-center transition-opacity duration-500 opacity-100"></div>';
+            const inner = document.getElementById('hero-day-inner');
+            let idx = 0;
+            const render = () => {
+                const toy = heroToys[idx];
+                const precoBase = toy.preco || 0;
+                const desconto = toy.desconto || 0;
+                const precoCalculado = precoBase * (1 - desconto / 100);
+                inner.innerHTML = `
+                    <div class="lg:w-1/2 space-y-6 text-white relative z-10 order-2 lg:order-1">
+                        <div class="flex flex-wrap gap-2">
+                            <span class="inline-block px-4 py-1.5 bg-blue-500/30 backdrop-blur-md rounded-full text-xs font-black uppercase tracking-widest border border-white/20">Em Destaque</span>
+                            ${desconto > 0 ? `<span class="inline-block px-4 py-1.5 bg-red-500 rounded-full text-xs font-black uppercase tracking-widest shadow-lg animate-bounce">PROMOÇÃO -${desconto}%</span>` : ''}
+                        </div>
+                        <h3 class="text-5xl font-black drop-shadow-xl">${toy.nome}</h3>
+                        <p class="text-blue-100 font-bold text-lg opacity-90 line-clamp-2">${toy.descricao || 'Herói em destaque na ToyToy.'}</p>
+                        <div class="flex items-center gap-6 pt-4">
+                            <div class="flex flex-col">
+                                ${desconto > 0 ? `<span class="text-sm text-blue-200/60 line-through font-bold">R$ ${precoBase.toFixed(2)}</span>` : ''}
+                                <p class="text-5xl font-black drop-shadow-md">R$ ${precoCalculado.toFixed(2)}</p>
+                            </div>
+                            <button onclick="window.location.href='detalhes.html?id=${toy.id}'" class="px-8 py-4 bg-white text-blue-900 rounded-2xl font-black shadow-2xl hover:scale-110 transition-transform active:scale-95 cursor-pointer">Ver Herói</button>
+                        </div>
+                    </div>
+                    <div class="lg:w-1/2 flex justify-center items-center order-1 lg:order-2 mb-10 relative">
+                        <img src="${toy.caminhoImagem}" class="w-full max-w-sm h-[320px] object-contain drop-shadow-2xl p-6 group-hover:scale-110 transition-transform duration-500">
+                    </div>`;
+            };
+            render();
+            setInterval(() => {
+                inner.classList.replace('opacity-100', 'opacity-0');
+                setTimeout(() => { idx = (idx + 1) % heroToys.length; render(); inner.classList.replace('opacity-0', 'opacity-100'); }, 500);
+            }, 5000);
+        }
+
+        // Renderização dos cards da seção de promoções
+        function renderPromos(products) {
+            const c = document.getElementById('promo-container');
+            c.innerHTML = products.map(p => {
+                const precoBase = p.preco || 0;
+                const desconto = p.desconto || 0;
+                const precoCalculado = precoBase * (1 - desconto / 100);
+                return `
+                <div class="min-w-[230px] bg-white rounded-3xl p-5 shadow-sm hover:shadow-xl transition-all cursor-pointer group flex flex-col snap-start" onclick="window.location.href='detalhes.html?id=${p.id}'">
+                    <div class="aspect-square rounded-2xl bg-slate-50 mb-4 overflow-hidden relative">
+                        <img src="${p.caminhoImagem}" class="w-full h-full object-contain p-4 group-hover:scale-110 transition-transform duration-500">
+                        <span class="absolute top-3 left-3 bg-red-500 text-white text-[10px] font-black px-3 py-1 rounded-full shadow-sm">-${desconto}%</span>
+                    </div>
+                    <div class="space-y-1 mb-2">
+                        <span class="text-[9px] text-slate-400 font-black uppercase tracking-widest">${p.categoria}</span>
+                        <h4 class="font-black text-on-surface line-clamp-1 group-hover:text-primary transition-colors text-sm">${p.nome}</h4>
+                    </div>
+                    <div class="mt-auto pt-4 flex justify-between items-end">
+                        <div class="flex flex-col">
+                            <span class="text-[10px] text-slate-300 line-through font-bold">R$ ${precoBase.toFixed(2)}</span>
+                            <p class="text-xl font-black text-red-600">R$ ${precoCalculado.toFixed(2)}</p>
+                        </div>
+                        <button onclick="addToCart(event, ${p.id}, '${p.nome.replace(/'/g, "\\'")}', ${precoCalculado}, '${p.caminhoImagem}')" class="w-10 h-10 bg-red-50 text-red-600 rounded-2xl flex items-center justify-center hover:bg-red-600 hover:text-white transition-all">
+                            <span class="material-symbols-outlined font-black text-sm">add</span>
+                        </button>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        // Renderização dinâmica da grade do catálogo
+        function renderCatalogo(products) {
+            const container = document.getElementById('product-container');
+            const uniqueProducts = [];
+            const names = new Set();
+            for (const p of products) { if (!names.has(p.nome)) { names.add(p.nome); uniqueProducts.push(p); } }
+            const bestSellerHTML = `<div class="md:col-span-1 md:row-span-1 rounded-3xl overflow-hidden flex flex-col p-8 group cursor-pointer animate-bg-gradient bg-gradient-to-br from-[#FEF08A] via-[#FBBF24] to-[#F97316] shadow-xl relative" onclick="irParaBrinquedoAleatorio(event)"><div class="mb-auto relative z-10 text-white"><span class="inline-flex items-center gap-1 px-4 py-2 bg-white text-orange-600 text-[10px] font-black uppercase rounded-full mb-6 shadow-md animate-pulse">ESCOLHA ALEATÓRIA</span><h3 class="text-3xl font-black mb-4 leading-tight drop-shadow-md text-white">A Escolha Favorita!</h3><p class="mb-6 font-bold opacity-95 text-xs drop-shadow-sm text-white">Deixe que o sistema decida sua próxima aventura!</p><button class="px-8 py-3 bg-white text-orange-600 rounded-full font-black shadow-xl hover:scale-105 transition-transform text-sm">Sortear Agora</button></div></div>`;
+            const cardsHTML = uniqueProducts.map(p => {
+                const precoBase = p.preco || 0; const desconto = p.desconto || 0; const precoCalculado = precoBase * (1 - desconto / 100);
+                const corPreco = desconto > 0 ? 'text-red-600' : 'text-primary';
+                return `<div class="bg-white rounded-3xl p-5 shadow-sm hover:shadow-xl transition-all cursor-pointer group flex flex-col" onclick="window.location.href='detalhes.html?id=${p.id}'"><div class="aspect-square rounded-2xl bg-slate-50 mb-4 overflow-hidden relative"><img src="${p.caminhoImagem}" class="w-full h-full object-contain p-6 group-hover:scale-110 transition-transform duration-500">${desconto > 0 ? `<span class="absolute top-3 left-3 bg-red-500 text-white text-[10px] font-black px-3 py-1 rounded-full shadow-sm">-${desconto}%</span>` : ''}</div><h4 class="font-black text-on-surface line-clamp-1 group-hover:text-primary transition-colors text-sm">${p.nome}</h4><div class="mt-auto pt-4 flex justify-between items-end"><div class="flex flex-col">${desconto > 0 ? `<span class="text-[11px] text-slate-300 line-through font-bold">R$ ${precoBase.toFixed(2)}</span>` : ''}<p class="text-2xl font-black ${corPreco}">R$ ${precoCalculado.toFixed(2)}</p></div><button onclick="addToCart(event, ${p.id}, '${p.nome.replace(/'/g, "\\'")}', ${precoCalculado}, '${p.caminhoImagem}')" class="w-12 h-12 bg-blue-50 text-primary rounded-2xl flex items-center justify-center hover:bg-primary hover:text-white transition-all"><span class="material-symbols-outlined font-black">add</span></button></div></div>`;
+            }).join('');
+            container.innerHTML = bestSellerHTML + cardsHTML;
+        }
+
+        // Carrega lista de categorias para popular filtros
+        async function loadCategories() {
+            try {
+                const res = await fetch('http://localhost:8080/api/categorias');
+                const cats = await res.json();
+                const container = document.getElementById('category-filters');
+                if(!container) return;
+                container.innerHTML = `<button onclick="filterByCategory('')" class="whitespace-nowrap px-8 py-4 bg-primary text-white rounded-2xl font-black shadow-lg shrink-0">Todas as Categorias</button>` + cats.map(c => `<button onclick="filterByCategory('${c}')" class="whitespace-nowrap px-8 py-4 bg-white text-slate-500 rounded-2xl font-black shadow-sm hover:bg-slate-50 border border-slate-100 shrink-0">${c}</button>`).join('');
+            } catch (e) { console.error(e); }
+        }
+
+        // Aplica filtro por categoria na exibição atual
+        async function filterByCategory(cat) {
+            const filtered = cat ? globalAllProducts.filter(p => p.categoria.includes(cat)) : globalAllProducts;
+            renderCatalogo(filtered);
+            document.querySelectorAll('#category-filters button').forEach(btn => {
+                if (btn.textContent.trim() === (cat || 'Todas as Categorias')) btn.className = 'whitespace-nowrap px-8 py-4 bg-primary text-white rounded-2xl font-black shadow-lg transition-all shrink-0';
+                else btn.className = 'whitespace-nowrap px-8 py-4 bg-white text-slate-500 rounded-2xl font-black shadow-sm hover:bg-slate-50 transition-all border border-slate-100 shrink-0';
+            });
+            document.getElementById('catalogo').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Configura funcionalidade de arraste horizontal dos filtros
+        function setupCategoryDrag() {
+            const slider = document.getElementById('category-filters');
+            let isDown = false, startX, scrollLeft;
+            slider.addEventListener('mousedown', (e) => { isDown = true; slider.classList.add('cursor-grabbing'); startX = e.pageX - slider.offsetLeft; scrollLeft = slider.scrollLeft; });
+            slider.addEventListener('mouseleave', () => { isDown = false; slider.classList.remove('cursor-grabbing'); });
+            slider.addEventListener('mouseup', () => { isDown = false; slider.classList.remove('cursor-grabbing'); });
+            slider.addEventListener('mousemove', (e) => { if (!isDown) return; e.preventDefault(); const walk = (e.pageX - slider.offsetLeft - startX) * 2; slider.scrollLeft = scrollLeft - walk; });
+        }
+
+        // Verifica sessão do usuário e ajusta visibilidade de menus
+        function checkAuth() {
+            const auth = localStorage.getItem('toy_auth');
+            const data = JSON.parse(localStorage.getItem('toy_user') || '{}');
+            if (auth && data.login) {
+                document.getElementById('btn-entrar').classList.add('hidden');
+                document.getElementById('user-menu').classList.replace('hidden', 'flex');
+                document.getElementById('user-name-display').textContent = `Olá, ${data.nome.split(' ')[0]}`;
+                const isAdmin = data.perfil === 'ROLE_ADMIN' || data.perfil === 'ADMIN';
+                if (isAdmin) {
+                    document.getElementById('admin-link').classList.remove('hidden');
+                    document.getElementById('profile-link').classList.remove('hidden');
+                } else {
+                    document.getElementById('admin-link').classList.add('hidden');
+                    document.getElementById('profile-link').classList.remove('hidden');
+                }
+            }
+        }
+
+        function toggleLoginModal() { document.getElementById('login-modal').classList.toggle('hidden'); }
+        function toggleCartModal() { 
+            const modal = document.getElementById('cart-modal');
+            const drawer = document.getElementById('cart-drawer');
+            modal.classList.toggle('hidden'); 
+            if(!modal.classList.contains('hidden')) { renderCartItems(); setTimeout(() => drawer.classList.remove('translate-x-full'), 10); }
+            else drawer.classList.add('translate-x-full');
+        }
+
+        function updateCartBadge() {
+            const cart = JSON.parse(localStorage.getItem('toy_cart') || '[]');
+            const count = cart.reduce((acc, i) => acc + i.qtd, 0);
+            const badge = document.getElementById('cart-count');
+            badge.textContent = count;
+            count > 0 ? badge.classList.remove('hidden') : badge.classList.add('hidden');
+        }
+
+       // Renderiza listagem do carrinho local
+       function renderCartItems() {
+        const cart = JSON.parse(localStorage.getItem('toy_cart') || '[]');
+        const container = document.getElementById('cart-items');
+        const totalEl = document.getElementById('cart-total');
+        const btnCheck = document.getElementById('btn-checkout');
+        if(cart.length === 0) {
+            container.innerHTML = `<div class="flex flex-col items-center justify-center h-full text-center text-slate-400 py-10"><span class="material-symbols-outlined text-6xl mb-4 opacity-50">shopping_bag</span><p class="font-bold">Seu carrinho está vazio.</p></div>`;
+            totalEl.textContent = 'R$ 0,00';
+            if(btnCheck) btnCheck.disabled = true;
+            return;
+        }
+        let total = 0;
+        container.innerHTML = cart.map((item, index) => {
+            total += item.preco * item.qtd;
+            return `<div class="flex items-center gap-4 bg-white p-4 rounded-3xl shadow-sm border border-slate-100"><div class="w-20 h-20 bg-slate-50 rounded-2xl p-2 shrink-0 flex items-center justify-center overflow-hidden"><img src="${item.imagem || 'https://via.placeholder.com/100'}" class="w-full h-full object-contain" onerror="this.src='https://via.placeholder.com/100'"></div><div class="flex-1 space-y-1"><h4 class="font-bold text-sm text-on-surface line-clamp-1">${item.nome}</h4><p class="text-primary font-black">R$ ${item.preco.toFixed(2)}</p><div class="flex items-center justify-between pt-1"><span class="text-xs font-bold text-slate-500 bg-slate-100 px-2 py-1 rounded-lg">Qtd: ${item.qtd}</span><button onclick="removeCartItem(${index})" class="text-error-dim hover:text-error text-[10px] font-black transition-colors uppercase tracking-widest cursor-pointer">Remover</button></div></div></div>`;
+        }).join('');
+        totalEl.textContent = 'R$ ' + total.toFixed(2);
+        if(btnCheck) btnCheck.disabled = false;
+    }
+
+    function removeCartItem(index) {
+        let cart = JSON.parse(localStorage.getItem('toy_cart') || '[]');
+        cart.splice(index, 1);
+        localStorage.setItem('toy_cart', JSON.stringify(cart));
+        renderCartItems();
+        updateCartBadge();
+    }
+
+        // Processa autenticação de usuário
+        async function handleLogin(e) {
+            e.preventDefault();
+            const btn = e.target.querySelector('button[type="submit"]');
+            const originalText = btn.innerHTML;
+            const errorEl = document.getElementById('auth-error');
+            if (errorEl) errorEl.classList.add('hidden');
+            
+            btn.disabled = true;
+            btn.innerHTML = '<span class="material-symbols-outlined animate-spin">refresh</span> Entrando...';
+
+            const credentials = btoa(`${document.getElementById('login-user').value}:${document.getElementById('login-pass').value}`);
+            try {
+                const res = await fetch(`${API_USER}/login`, { method: 'POST', headers: { 'Authorization': `Basic ${credentials}` } });
+                if (res.ok) {
+                    const data = await res.json();
+                    localStorage.setItem('toy_auth', credentials);
+                    localStorage.setItem('toy_user', JSON.stringify(data));
+                    window.location.reload();
+                } else if (errorEl) { 
+                    errorEl.textContent = "E-mail ou senha incorretos!"; 
+                    errorEl.classList.remove('hidden'); 
+                    btn.disabled = false;
+                    btn.innerHTML = originalText;
+                }
+            } catch (e) { 
+                if (errorEl) { 
+                    errorEl.textContent = "Servidor fora do ar."; 
+                    errorEl.classList.remove('hidden'); 
+                }
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+            }
+        }
+
+        function maskCPF(input) {
+            let value = input.value.replace(/\D/g, '').slice(0, 11);
+            if (value.length > 9) value = value.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
+            else if (value.length > 6) value = value.replace(/(\d{3})(\d{3})(\d{1,3})/, "$1.$2.$3");
+            else if (value.length > 3) value = value.replace(/(\d{3})(\d{1,3})/, "$1.$2");
+            input.value = value;
+        }
+
+        function clearRegisterErrors() {
+            document.querySelectorAll('#register-tab span[id^="err-"]').forEach(s => s.classList.add('hidden'));
+            document.querySelectorAll('#register-tab input').forEach(i => i.classList.remove('ring-2', 'ring-error'));
+            const regError = document.getElementById('reg-error'); if (regError) regError.classList.add('hidden');
+        }
+
+        function showFieldError(fieldId, message) {
+            const input = document.getElementById(`reg-${fieldId}`); const span = document.getElementById(`err-reg-${fieldId}`);
+            if (input) input.classList.add('ring-2', 'ring-error'); if (span) { span.textContent = message; span.classList.remove('hidden'); }
+        }
+
+        // Validação e envio de novo cadastro
+        async function handleRegister(e) {
+            e.preventDefault(); clearRegisterErrors();
+            const nome = document.getElementById('reg-nome').value.trim(); const email = document.getElementById('reg-email').value.trim();
+            const senha = document.getElementById('reg-senha').value; const cpf = document.getElementById('reg-cpf').value;
+            const endereco = document.getElementById('reg-endereco').value.trim();
+            let hasError = false;
+            if (nome.length < 3) { showFieldError('nome', "Digite seu nome completo!"); hasError = true; }
+            if (!email.includes('@') || email.length < 5) { showFieldError('email', "E-mail inválido!"); hasError = true; }
+            if (senha.length < 6) { showFieldError('senha', "Mínimo 6 caracteres!"); hasError = true; }
+            if (cpf.length !== 14) { showFieldError('cpf', "CPF incompleto!"); hasError = true; }
+            if (endereco.length < 10) { showFieldError('endereco', "Endereço muito curto!"); hasError = true; }
+            if (hasError) return;
+            try {
+                const userData = { login: email, nome, email, senha, cpf, endereco, perfil: 'ROLE_USER' };
+                const response = await fetch(`${API_USER}/registrar`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(userData) });
+                if (response.ok) { showToast("Conta criada com sucesso!", "success"); switchTab('login'); } 
+                else { 
+                    const data = await response.json(); 
+                    if (response.status === 400 && typeof data === 'object' && !data.mensagem) {
+                        Object.keys(data).forEach(field => showFieldError(field, data[field]));
+                    } else {
+                        const msg = data.mensagem || "Erro ao registrar.";
+                        if (msg.includes("Login") || msg.includes("E-mail")) showFieldError('email', "E-mail já cadastrado.");
+                        else if (msg.includes("CPF")) showFieldError('cpf', "CPF já cadastrado.");
+                        else { const errorEl = document.getElementById('reg-error'); errorEl.textContent = msg; errorEl.classList.remove('hidden'); }
+                    }
+                }
+            } catch (e) { showToast("Erro de conexão.", "error"); }
+        }
+
+        function switchTab(aba) { 
+            document.getElementById('login-tab').classList.toggle('hidden', aba === 'register');
+            document.getElementById('register-tab').classList.toggle('hidden', aba === 'login');
+        }
+
+        // Finaliza checkout de itens do carrinho
+        async function checkout() {
+            const cart = JSON.parse(localStorage.getItem('toy_cart') || '[]');
+            const auth = localStorage.getItem('toy_auth');
+            if (!auth) { toggleCartModal(); toggleLoginModal(); return; }
+            if (cart.length === 0) return;
+            const btn = document.getElementById('btn-checkout'); const originalText = btn.innerHTML;
+            btn.disabled = true; btn.innerHTML = '<span class="material-symbols-outlined animate-spin">refresh</span> Processando...';
+            let success = false;
+            try {
+                for (let item of cart) {
+                    for (let i = 0; i < item.qtd; i++) {
+                        const res = await fetch(`${API_BASE}/encomendar/${item.id}`, { method: 'POST', headers: { 'Authorization': `Basic ${auth}` } });
+                        if (res.ok) success = true;
+                    }
+                }
+                if (success) { showToast("Pedido realizado com sucesso!", "success"); localStorage.setItem('toy_cart', '[]'); setTimeout(() => window.location.reload(), 1500); } 
+                else { showToast("Erro ao processar pedido. Verifique o estoque.", "error"); btn.disabled = false; btn.innerHTML = originalText; }
+            } catch (e) { showToast("Erro de conexão com o servidor.", "error"); btn.disabled = false; btn.innerHTML = originalText; }
+        }
+
+        function performLogout() { localStorage.clear(); window.location.reload(); }
+        function addToCart(e, id, nome, preco, imagem) { if(e) { e.stopPropagation(); e.preventDefault(); } doAdd(id, nome, preco, imagem, 1); }
+        
+        function doAdd(id, nome, preco, imagem, qtdParam) {
+            const auth = localStorage.getItem('toy_auth');
+            if (!auth) { showToast("Faça login para adicionar ao carrinho!", "error"); toggleLoginModal(); return; }
+            let cart = JSON.parse(localStorage.getItem('toy_cart') || '[]');
+            const idx = cart.findIndex(it => it.id === id);
+            if (idx > -1) cart[idx].qtd += qtdParam; else cart.push({ id, nome, preco, imagem, qtd: qtdParam });
+            localStorage.setItem('toy_cart', JSON.stringify(cart)); updateCartBadge();
+            showToast(`${nome} adicionado ao carrinho!`, 'success');
+        }
+
+        // Gerencia barra de pesquisa e sugestões dinâmicas
+        function setupSearch() {
+            const input = document.getElementById('search-input');
+            const box = document.getElementById('search-suggestions');
+            const buscarUnique = (t) => {
+                const filtered = globalAllProducts.filter(p => (p.nome && p.nome.toLowerCase().includes(t)) || (p.categoria && p.categoria.toLowerCase().includes(t)));
+                const unique = []; const names = new Set();
+                for (const p of filtered) { if (!names.has(p.nome)) { names.add(p.nome); unique.push(p); } }
+                return unique;
+            };
+            input.addEventListener('input', (e) => {
+                const term = e.target.value.toLowerCase().trim();
+                if(term.length < 2) { box.classList.add('hidden'); return; }
+                const res = buscarUnique(term).slice(0, 5);
+                box.innerHTML = res.length === 0 ? '<div class="p-4 text-center text-slate-400">Nenhum brinquedo</div>' : res.map(p => `<div onclick="window.location.href='detalhes.html?id=${p.id}'" class="p-3 hover:bg-slate-50 cursor-pointer flex items-center gap-3 border-b border-slate-50"><img src="${p.caminhoImagem}" class="w-10 h-10 object-contain rounded-lg bg-white p-1 border border-slate-100"><div><span class="font-black text-sm text-primary block line-clamp-1">${p.nome}</span><span class="text-[9px] text-slate-400 uppercase font-black">${p.categoria}</span></div></div>`).join('');
+                box.classList.remove('hidden');
+            });
+            input.addEventListener('keypress', (e) => { if (e.key === 'Enter') { const res = buscarUnique(input.value.toLowerCase().trim()); renderCatalogo(res); document.getElementById('catalogo').scrollIntoView({ behavior: 'smooth' }); box.classList.add('hidden'); input.blur(); } });
+            document.addEventListener('click', (e) => { if (!e.target.closest('#search-suggestions') && !e.target.closest('#search-input')) box.classList.add('hidden'); });
+        }
+
+        // Ordena catálogo atual por preço
+        function sortCatalog() {
+            const order = document.getElementById('sort-select').value;
+            const activeBtn = document.querySelector('#category-filters button.bg-primary');
+            const activeCat = activeBtn && activeBtn.textContent !== 'Todas as Categorias' ? activeBtn.textContent.trim() : '';
+            let lista = activeCat ? globalAllProducts.filter(p => p.categoria.includes(activeCat)) : [...globalAllProducts];
+            if (order === 'asc') lista.sort((a, b) => a.preco - b.preco); else if (order === 'desc') lista.sort((a, b) => b.preco - a.preco);
+            renderCatalogo(lista);
+        }
+    </script>
+</body>
+</html>
